@@ -1,47 +1,6 @@
 const { query, queryOne, transaction } = require('./connection');
-const bcrypt = require('bcrypt');
 
 class DatabaseService {
-  // ============= ADMIN METHODS =============
-  
-  async createAdmin(username, password) {
-    const passwordHash = await bcrypt.hash(password, 12);
-    const result = await query(
-      'INSERT INTO admins (username, password_hash) VALUES (?, ?)',
-      [username, passwordHash]
-    );
-    return result.insertId;
-  }
-  
-  async getAdminByUsername(username) {
-    return await queryOne(
-      'SELECT admin_id, username, password_hash, last_login_at FROM admins WHERE username = ?',
-      [username]
-    );
-  }
-  
-  async updateAdminLastLogin(adminId) {
-    await query(
-      'UPDATE admins SET last_login_at = CURRENT_TIMESTAMP WHERE admin_id = ?',
-      [adminId]
-    );
-  }
-  
-  async verifyAdminPassword(username, password) {
-    const admin = await this.getAdminByUsername(username);
-    if (!admin) return null;
-    
-    const isValid = await bcrypt.compare(password, admin.password_hash);
-    if (!isValid) return null;
-    
-    await this.updateAdminLastLogin(admin.admin_id);
-    return {
-      admin_id: admin.admin_id,
-      username: admin.username,
-      last_login_at: admin.last_login_at
-    };
-  }
-  
   // ============= ARTIST METHODS =============
   
   async createArtist(data) {
