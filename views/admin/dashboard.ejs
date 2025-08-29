@@ -1,0 +1,35 @@
+<div class="admin-container" style="max-width:1200px;margin:2rem auto;padding:1rem;">
+  <header style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+    <h1 style="margin:0;display:flex;align-items:center;gap:.5rem;"><i class="fa-solid fa-gauge"></i> Admin Dashboard</h1>
+    <form method="post" action="/admin/logout">
+      <button class="btn" type="submit"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </form>
+  </header>
+
+  <section style="margin-top:1.5rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;">
+    <div class="card">
+      <div class="card__body">
+        <h3><i class="fa-solid fa-users"></i> Artists</h3>
+        <p>Manage artists and applications.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card__body">
+        <h3><i class="fa-solid fa-palette"></i> Arts</h3>
+        <p>Create, edit, and list artworks.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card__body">
+        <h3><i class="fa-solid fa-cart-shopping"></i> Orders</h3>
+        <p>Track orders and mark deliveries.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card__body">
+        <h3><i class="fa-solid fa-envelope"></i> Messages</h3>
+        <p>View contact submissions.</p>
+      </div>
+    </div>
+  </section>
+</div>

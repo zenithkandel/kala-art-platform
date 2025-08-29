@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
-const db = require('../services/databaseService'); // Assuming you have a database service
+const dbService = require('../database/service');
+const { requireAdminAuth, rateLimitLogin } = require('../middleware/adminAuth');
 
-// GET /admin - Redirect to dashboard
-router.get('/', (req, res) => {
-    res.send('Admin section');
+// GET /admin - Dashboard placeholder
+router.get('/', requireAdminAuth, async (req, res) => {
+    // Placeholder dashboard data; wire real stats later using dbService methods
+    res.render('admin/dashboard', { title: 'Dashboard' });
 });
 
 // GET /admin/login - Render login page
@@ -17,32 +18,24 @@ router.get('/login', (req, res) => {
 });
 
 // POST /admin/login - Handle login
-router.post('/login', async (req, res) => {
+router.post('/login', rateLimitLogin, async (req, res) => {
     try {
         const { username, password } = req.body;
-        const [admins] = await db.query('SELECT * FROM admins WHERE username = ?', [username]);
-
-        if (admins.length === 0) {
+        const verified = await dbService.verifyAdminPassword(username, password);
+        if (!verified) {
             return res.render('admin/login', { title: 'Admin Login', error: 'Invalid credentials', layout: false });
         }
 
-        const admin = admins[0];
-        const match = await bcrypt.compare(password, admin.password);
-
-        if (match) {
-            req.session.admin = { id: admin.admin_id, username: admin.username };
-            res.redirect('/admin');
-        } else {
-            res.render('admin/login', { title: 'Admin Login', error: 'Invalid credentials', layout: false });
-        }
+        req.session.admin = { id: verified.admin_id, username: verified.username };
+        return res.redirect('/admin');
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
+        console.error('Admin login error:', err);
+        return res.status(500).render('admin/login', { title: 'Admin Login', error: 'Server error. Please try again.', layout: false });
     }
 });
 
 // POST /admin/logout - Handle logout
-router.post('/logout', (req, res) => {
+router.post('/logout', requireAdminAuth, (req, res) => {
     req.session.destroy(err => {
         if (err) {
             return res.redirect('/admin');
@@ -51,15 +44,5 @@ router.post('/logout', (req, res) => {
         res.redirect('/admin/login');
     });
 });
-
-// Middleware to protect admin routes
-const requireAdmin = (req, res, next) => {
-    if (!req.session.admin) {
-        return res.redirect('/admin/login');
-    }
-    next();
-};
-
-// Other admin routes (arts, artists, etc.) will go here
 
 module.exports = router;
