@@ -8,6 +8,20 @@
   </div>
 </div>
 
+<% if (success) { %>
+  <div class="alert alert--success">
+    <i class="fa-light fa-circle-check"></i>
+    <%= success %>
+  </div>
+<% } %>
+
+<% if (error) { %>
+  <div class="alert alert--error">
+    <i class="fa-light fa-circle-exclamation"></i>
+    <%= error %>
+  </div>
+<% } %>
+
 <section class="register-benefits">
   <h2><i class="fa-duotone fa-heart"></i> Why Artists Love कला</h2>
   <div class="benefits-grid">
@@ -48,7 +62,7 @@
     <p>Tell us about yourself and we'll get back to you within 48 hours!</p>
   </div>
 
-  <form class="form form--registration" method="post" action="#" id="registrationForm">
+  <form class="form form--registration" method="post" action="/register" id="registrationForm">
     <div class="form__section">
       <h3><i class="fa-light fa-id-card"></i> About You</h3>
       <div class="form__grid">
