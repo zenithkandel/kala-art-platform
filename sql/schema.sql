@@ -1,3 +1,7 @@
+-- Create and use the database
+CREATE DATABASE IF NOT EXISTS `kala-art-platform`;
+USE `kala-art-platform`;
+
 -- kalaa (art) platform schema
 -- Note: Uses simple MySQL tables (InnoDB) suitable for mysql2 + prepared statements.
 -- This schema supports:
@@ -197,5 +201,13 @@ CREATE TABLE IF NOT EXISTS page_views_daily (
 --        o.total_amount, o.created_at AS ordered_at, o.updated_at AS delivered_at
 -- FROM orders o
 -- WHERE o.status = 'delivered' AND o.deleted_at IS NULL;
+
+-- =========================================================
+--  INSERT DEFAULT ADMIN USER
+-- =========================================================
+-- Default admin user (username: admin, password: admin123)
+-- Password hash generated with bcrypt for 'admin123'
+INSERT INTO admins (username, password_hash) VALUES 
+('admin', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
 
 -- End of schema
