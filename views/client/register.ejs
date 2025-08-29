@@ -1,20 +1,80 @@
 <section class="prose">
-  <h1>Register as an Artist</h1>
-  <p>Fill the form and our team will contact you within a week.</p>
+  <div class="prose__header">
+    <i class="fa-duotone fa-user-plus prose__icon"></i>
+    <h1>Register as an Artist</h1>
+  </div>
+  <p>Join our community of talented artists. Fill the form below and our team will contact you within a week to discuss your application.</p>
+  
+  <div class="benefits">
+    <div class="benefit">
+      <i class="fa-duotone fa-storefront benefit__icon"></i>
+      <span>Showcase your art to a global audience</span>
+    </div>
+    <div class="benefit">
+      <i class="fa-duotone fa-coins benefit__icon"></i>
+      <span>Earn from your creativity</span>
+    </div>
+    <div class="benefit">
+      <i class="fa-duotone fa-users benefit__icon"></i>
+      <span>Join a supportive artist community</span>
+    </div>
+  </div>
 </section>
 
-<form class="form" method="post" action="#">
-  <div class="field"><label>Full Name<input name="full_name" required></label></div>
-  <div class="field"><label>Age<input name="age" type="number" min="10" max="100" required></label></div>
-  <div class="field"><label>Started art since<input name="started_art_since" type="number" min="1900" max="2100"></label></div>
-  <div class="field"><label>School<input name="school"></label></div>
-  <div class="field"><label>Location<input name="location"></label></div>
-  <div class="field"><label>Extra message<textarea name="extra_message" rows="4"></textarea></label></div>
-  <fieldset class="fieldset">
-    <legend>Contact</legend>
-    <div class="field"><label>Email<input name="contact_email" type="email"></label></div>
-    <div class="field"><label>Phone<input name="contact_phone" type="tel"></label></div>
-    <div class="field"><label>Instagram<input name="instagram" placeholder="@username"></label></div>
-  </fieldset>
-  <button class="btn" type="submit">Submit Application</button>
+<form class="form form--registration" method="post" action="#">
+  <div class="form__section">
+    <h3><i class="fa-light fa-id-card"></i> Personal Information</h3>
+    <div class="form__grid">
+      <div class="field">
+        <label><i class="fa-light fa-user"></i> Full Name</label>
+        <input name="full_name" required>
+      </div>
+      <div class="field">
+        <label><i class="fa-light fa-cake-candles"></i> Age</label>
+        <input name="age" type="number" min="10" max="100" required>
+      </div>
+      <div class="field">
+        <label><i class="fa-light fa-calendar-clock"></i> Started art since</label>
+        <input name="started_art_since" type="number" min="1900" max="2100">
+      </div>
+      <div class="field">
+        <label><i class="fa-light fa-graduation-cap"></i> School</label>
+        <input name="school">
+      </div>
+      <div class="field field--full">
+        <label><i class="fa-light fa-location-dot"></i> Location</label>
+        <input name="location">
+      </div>
+    </div>
+  </div>
+
+  <div class="form__section">
+    <h3><i class="fa-light fa-address-book"></i> Contact Information</h3>
+    <div class="form__grid">
+      <div class="field">
+        <label><i class="fa-light fa-envelope"></i> Email</label>
+        <input name="contact_email" type="email">
+      </div>
+      <div class="field">
+        <label><i class="fa-light fa-phone"></i> Phone</label>
+        <input name="contact_phone" type="tel">
+      </div>
+      <div class="field">
+        <label><i class="fa-brands fa-instagram"></i> Instagram</label>
+        <input name="instagram" placeholder="@username">
+      </div>
+    </div>
+  </div>
+
+  <div class="form__section">
+    <h3><i class="fa-light fa-message-lines"></i> Additional Information</h3>
+    <div class="field">
+      <label><i class="fa-light fa-comment-dots"></i> Tell us about your art journey</label>
+      <textarea name="extra_message" rows="4" placeholder="Share your artistic style, inspiration, goals, or anything else you'd like us to know..."></textarea>
+    </div>
+  </div>
+
+  <button class="btn btn--primary btn--large" type="submit">
+    <i class="fa-light fa-paper-plane"></i> Submit Application
+  </button>
 </form>

@@ -10,7 +10,11 @@
     btn.addEventListener('click', () => {
       const curr = root.getAttribute('data-theme');
       setTheme(curr === 'dark' ? 'light' : 'dark');
-      btn.querySelector('i').className = (root.getAttribute('data-theme') === 'dark') ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      const icon = btn.querySelector('i');
+      icon.className = (root.getAttribute('data-theme') === 'dark') ? 'fa-duotone fa-sun-bright' : 'fa-duotone fa-moon-stars';
     });
+    // Set initial icon
+    const icon = btn.querySelector('i');
+    icon.className = (initial === 'dark') ? 'fa-duotone fa-sun-bright' : 'fa-duotone fa-moon-stars';
   }
 })();

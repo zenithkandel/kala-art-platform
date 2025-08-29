@@ -434,11 +434,228 @@ main { flex: 1; width: min(1100px, 100%); margin: 0 auto; padding: 16px; }
 .cursor--hover #cursorDot { width: 16px; height: 16px; }
 .cursor--active #cursorDot { width: 24px; height: 24px; }
 
-/* Hide system cursor when custom cursor is active (non-touch only) */
-html.cursor-on body,
-html.cursor-on a,
-html.cursor-on button,
-html.cursor-on .btn,
-html.cursor-on input,
-html.cursor-on textarea,
-html.cursor-on select { cursor: none !important; }
+/* Enhanced UI styles with premium FontAwesome icons */
+
+/* Icon enhancements */
+.icon {
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon:hover {
+  transform: scale(1.05);
+  color: var(--accent);
+}
+
+/* Stats section with icons */
+.stat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 16px;
+}
+
+.stat__icon {
+  font-size: 24px;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+/* Search enhancements */
+.search__input-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.search__icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.search__form input {
+  padding-left: 40px;
+}
+
+/* Grid header and filters */
+.grid__header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.grid__header h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.grid__filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.grid__filters .btn {
+  font-size: 0.875rem;
+  padding: 8px 12px;
+}
+
+.grid__filters .btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Form enhancements */
+.form__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .form__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .field--full {
+    grid-column: 1 / -1;
+  }
+}
+
+.form__section {
+  margin-bottom: 32px;
+}
+
+.form__section h3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.125rem;
+  margin-bottom: 16px;
+  color: var(--primary);
+}
+
+.field label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--muted);
+}
+
+.field label i {
+  width: 16px;
+  color: var(--primary);
+}
+
+/* Prose section enhancements */
+.prose__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.prose__icon {
+  font-size: 2rem;
+  color: var(--primary);
+}
+
+/* Features grid */
+.features {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin: 32px 0;
+}
+
+@media (min-width: 768px) {
+  .features {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.feature {
+  text-align: center;
+  padding: 24px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in oklab, var(--text) 8%, transparent);
+  transition: all 0.3s ease;
+}
+
+.feature:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+  border-color: var(--primary);
+}
+
+.feature__icon {
+  font-size: 2.5rem;
+  color: var(--primary);
+  margin-bottom: 16px;
+}
+
+.feature h3 {
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+/* Benefits list */
+.benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.benefit {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: color-mix(in oklab, var(--surface) 50%, transparent);
+  border-radius: 8px;
+  border: 1px solid color-mix(in oklab, var(--primary) 20%, transparent);
+}
+
+.benefit__icon {
+  color: var(--accent);
+  font-size: 1.25rem;
+}
+
+/* Contact section */
+.contact__header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.contact__icon {
+  font-size: 2rem;
+  color: var(--primary);
+  margin-bottom: 16px;
+}
+
+/* Button enhancements */
+.btn--large {
+  padding: 16px 24px;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.hero__cta {
+  margin-top: 24px;
+}

@@ -1,28 +1,74 @@
 <section class="hero">
   <div class="hero__content">
-    <h1>Discover Young Artistry</h1>
+    <h1><i class="fa-duotone fa-sparkles"></i> Discover Young Artistry</h1>
     <p>A sleek platform to explore and own artworks by talented young artists.</p>
+    <div class="hero__cta">
+      <a href="#grid" class="btn btn--primary">
+        <i class="fa-light fa-compass"></i> Explore Art
+      </a>
+    </div>
   </div>
 </section>
 
 <section class="stats" aria-label="Site statistics">
   <div class="stats__grid">
-    <div class="stat"><span class="stat__num" id="statVisitors">—</span><span class="stat__label">Visitors</span></div>
-    <div class="stat"><span class="stat__num" id="statArts">—</span><span class="stat__label">Arts</span></div>
-    <div class="stat"><span class="stat__num" id="statSold">—</span><span class="stat__label">Sold</span></div>
-    <div class="stat"><span class="stat__num" id="statArtists">—</span><span class="stat__label">Artists</span></div>
+    <div class="stat">
+      <i class="fa-duotone fa-eye stat__icon"></i>
+      <span class="stat__num" id="statVisitors">—</span>
+      <span class="stat__label">Visitors</span>
+    </div>
+    <div class="stat">
+      <i class="fa-duotone fa-paintbrush-fine stat__icon"></i>
+      <span class="stat__num" id="statArts">—</span>
+      <span class="stat__label">Arts</span>
+    </div>
+    <div class="stat">
+      <i class="fa-duotone fa-badge-check stat__icon"></i>
+      <span class="stat__num" id="statSold">—</span>
+      <span class="stat__label">Sold</span>
+    </div>
+    <div class="stat">
+      <i class="fa-duotone fa-users-rays stat__icon"></i>
+      <span class="stat__num" id="statArtists">—</span>
+      <span class="stat__label">Artists</span>
+    </div>
   </div>
 </section>
 
 <section class="search">
   <form class="search__form" role="search">
-    <input type="search" name="q" placeholder="Search artworks, artists, styles…" aria-label="Search" />
-    <button class="btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
+    <div class="search__input-wrapper">
+      <i class="fa-light fa-magnifying-glass search__icon"></i>
+      <input type="search" name="q" placeholder="Search artworks, artists, styles…" aria-label="Search" />
+    </div>
+    <button class="btn" type="submit">
+      <i class="fa-sharp fa-solid fa-arrow-right"></i>
+      <span>Search</span>
+    </button>
   </form>
 </section>
 
-<section class="grid" aria-label="Artworks">
+<section class="grid" id="grid" aria-label="Artworks">
+  <div class="grid__header">
+    <h2><i class="fa-light fa-grid-2"></i> Featured Artworks</h2>
+    <div class="grid__filters">
+      <button class="btn btn--ghost active">
+        <i class="fa-light fa-sparkles"></i> All
+      </button>
+      <button class="btn btn--ghost">
+        <i class="fa-light fa-pencil"></i> Sketches
+      </button>
+      <button class="btn btn--ghost">
+        <i class="fa-light fa-palette"></i> Paintings
+      </button>
+      <button class="btn btn--ghost">
+        <i class="fa-light fa-user-tie"></i> Portraits
+      </button>
+    </div>
+  </div>
   <div id="artGrid" class="grid__cards"></div>
-  <button id="loadMore" class="btn btn--ghost">Load more</button>
+  <button id="loadMore" class="btn btn--ghost">
+    <i class="fa-light fa-plus"></i> Load more
+  </button>
   <div id="observerSentinel" aria-hidden="true"></div>
 </section>
