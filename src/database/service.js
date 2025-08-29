@@ -4,18 +4,18 @@ const bcrypt = require('bcrypt');
 class DatabaseService {
   // ============= ADMIN METHODS =============
   
-  async createAdmin(username, password, email = null) {
+  async createAdmin(username, password) {
     const passwordHash = await bcrypt.hash(password, 12);
     const result = await query(
-      'INSERT INTO admins (username, password_hash, email) VALUES (?, ?, ?)',
-      [username, passwordHash, email]
+      'INSERT INTO admins (username, password_hash) VALUES (?, ?)',
+      [username, passwordHash]
     );
     return result.insertId;
   }
   
   async getAdminByUsername(username) {
     return await queryOne(
-      'SELECT admin_id, username, password_hash, email, last_login_at, created_at FROM admins WHERE username = ?',
+      'SELECT admin_id, username, password_hash, last_login_at, created_at FROM admins WHERE username = ?',
       [username]
     );
   }
@@ -38,7 +38,6 @@ class DatabaseService {
     return {
       admin_id: admin.admin_id,
       username: admin.username,
-      email: admin.email,
       last_login_at: admin.last_login_at
     };
   }

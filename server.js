@@ -10,6 +10,7 @@ const ejsLayouts = require('express-ejs-layouts');
 
 // Import database and middleware
 const { testConnection } = require('./src/database/connection');
+const { addAdminToLocals } = require('./src/middleware/adminAuth');
 const dbService = require('./src/database/service');
 
 const app = express();
@@ -48,6 +49,9 @@ app.set('view engine', 'ejs');
 app.use(ejsLayouts);
 app.set('layout', 'layouts/main');
 
+// Add admin to locals for all routes
+app.use(addAdminToLocals);
+
 // Expose common locals
 app.use((req, res, next) => {
   res.locals.appName = 'कला';
@@ -71,13 +75,28 @@ app.use(async (req, res, next) => {
 
 // Routes
 const clientRoutes = require('./src/routes/client');
+const adminRoutes = require('./src/routes/admin');
 
 // Use main layout for client routes
 app.use('/', clientRoutes);
 
+// Disable layouts for admin routes and use admin routes
+app.use('/admin', (req, res, next) => {
+  res.locals.layout = false;
+  next();
+}, adminRoutes);
+
 // 404 handler
 app.use((req, res) => {
-  res.status(404).render('misc/404', { title: 'Not Found' });
+  if (req.path.startsWith('/admin')) {
+    res.status(404).render('admin/error', {
+      title: '404 - Page Not Found',
+      message: 'The requested admin page was not found.',
+      layout: false
+    });
+  } else {
+    res.status(404).render('misc/404', { title: 'Not Found' });
+  }
 });
 
 // Error handler
@@ -88,10 +107,18 @@ app.use((err, req, res, next) => {
     ? 'Something went wrong!' 
     : err.message;
   
-  res.status(500).render('misc/error', {
-    title: '500 - Server Error',
-    message
-  });
+  if (req.path.startsWith('/admin')) {
+    res.status(500).render('admin/error', {
+      title: '500 - Server Error',
+      message,
+      layout: false
+    });
+  } else {
+    res.status(500).render('misc/error', {
+      title: '500 - Server Error',
+      message
+    });
+  }
 });
 
 // Graceful shutdown
