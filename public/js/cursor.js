@@ -4,6 +4,7 @@
   const c = document.getElementById('cursor');
   const dot = document.getElementById('cursorDot');
   if(!c||!dot) return;
+  root.classList.add('cursor-on');
   let x=0, y=0; let tx=0, ty=0; const lerp = (a,b,t)=>a+(b-a)*t;
   function move(e){ x = e.clientX; y = e.clientY; }
   window.addEventListener('mousemove', move);
