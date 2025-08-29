@@ -57,14 +57,17 @@ main { flex: 1; width: min(1100px, 100%); margin: 0 auto; padding: 16px; }
 @media (min-width: 768px) { .grid__cards { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1024px) { .grid__cards { grid-template-columns: repeat(3, 1fr); } }
 
-.card { background: var(--surface); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); opacity: 0; transform: translateY(8px); transition: opacity .3s ease, transform .3s ease; }
+.card { background: var(--surface); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); opacity: 0; transform: translateY(8px); transition: opacity .35s cubic-bezier(.22,1,.36,1), transform .35s cubic-bezier(.22,1,.36,1), box-shadow .25s ease, translate .25s ease; }
 .card[data-inview] { opacity: 1; transform: translateY(0); }
+.card:hover { translate: 0 -2px; box-shadow: 0 12px 28px rgba(0,0,0,.28); }
 .card__body { padding: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .price { font-weight: 700; }
 .btn { background: var(--surface); color: var(--text); border: 1px solid color-mix(in oklab, var(--text) 20%, transparent); padding: 10px 12px; border-radius: 10px; cursor: pointer; }
 .btn--primary { background: var(--primary); color: #fff; border: none; }
 .btn--ghost { background: transparent; }
 .btn--icon { padding: 8px; }
+.btn:hover { filter: brightness(1.05); transform: translateY(-1px); transition: transform .18s ease, filter .18s ease; }
+.btn:active { transform: translateY(0); filter: brightness(0.98); }
 
 .prose { padding: 16px 0; }
 .prose h1, .prose h2 { margin: 0 0 8px; }
@@ -96,3 +99,18 @@ main { flex: 1; width: min(1100px, 100%); margin: 0 auto; padding: 16px; }
   *::-webkit-scrollbar { width: 10px; height: 10px; }
   *::-webkit-scrollbar-thumb { background: color-mix(in oklab, var(--text) 30%, transparent); border-radius: 10px; }
 }
+
+/* Page transition overlay */
+#pageTransition { position: fixed; inset: 0; pointer-events: none; background: radial-gradient(1200px 600px at 50% -10%, color-mix(in oklab, var(--primary) 40%, transparent), transparent); opacity: 0; transition: opacity .35s ease; z-index: 70; }
+#pageTransition[data-active] { opacity: 1; }
+
+/* Background particles */
+#bgParticles { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .35; }
+
+/* Custom cursor (hidden on touch or when reduced motion is set) */
+@media (pointer: coarse) { #cursor { display: none; } }
+@media (prefers-reduced-motion: reduce) { #cursor { display: none; } #bgParticles { display: none; } }
+#cursor { position: fixed; z-index: 80; inset: 0; pointer-events: none; mix-blend-mode: difference; }
+#cursorDot { position: absolute; width: 10px; height: 10px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); transition: width .12s ease, height .12s ease; }
+.cursor--hover #cursorDot { width: 16px; height: 16px; }
+.cursor--active #cursorDot { width: 24px; height: 24px; }

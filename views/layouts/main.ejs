@@ -5,7 +5,13 @@
     <title><%= title ? (title + ' · ' + appName) : appName %></title>
   </head>
   <body>
-    <div id="app">
+  <!-- Background particles canvas -->
+  <canvas id="bgParticles" aria-hidden="true"></canvas>
+  <!-- Page transition overlay -->
+  <div id="pageTransition" aria-hidden="true"></div>
+  <!-- Custom cursor (hidden on touch devices) -->
+  <div id="cursor" aria-hidden="true"><span id="cursorDot"></span></div>
+  <div id="app">
       <%- include('../partials/navbar') %>
       <main id="main" tabindex="-1">
         <%- body %>
@@ -14,5 +20,8 @@
     </div>
     <script src="/public/js/theme.js"></script>
     <script src="/public/js/ui.js"></script>
+  <script src="/public/js/particles.js"></script>
+  <script src="/public/js/cursor.js"></script>
+  <script src="/public/js/transition.js"></script>
   </body>
   </html>
