@@ -39,7 +39,7 @@ app.set('layout', 'layouts/main');
 
 // Expose common locals
 app.use((req, res, next) => {
-  res.locals.appName = 'kalaa';
+  res.locals.appName = 'कला';
   res.locals.year = new Date().getFullYear();
   next();
 });
@@ -56,5 +56,5 @@ app.use((req, res) => {
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`kalaa client running on http://localhost:${PORT}`);
+  console.log(`कला client running on http://localhost:${PORT}`);
 });

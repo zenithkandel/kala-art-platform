@@ -4,7 +4,7 @@
   --text: #e8e8ea;
   --muted: #b5b5be;
   --primary: #7c5cff;
-  --accent: #4ad6b8;
+  --accent: #8b5fbf;
   --success: #24c389;
   --danger: #ff5c80;
   --radius: 12px;
@@ -12,7 +12,7 @@
   --shadow-xl: 0 20px 40px rgba(0,0,0,0.35);
   --glow: 0 0 20px rgba(124,92,255,0.3);
   --gradient-primary: linear-gradient(135deg, var(--primary), #9b7dff);
-  --gradient-accent: linear-gradient(135deg, var(--accent), #5ee8cc);
+  --gradient-accent: linear-gradient(135deg, var(--accent), #a374d4);
   --easing-smooth: cubic-bezier(0.22, 1, 0.36, 1);
   --easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
   --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
@@ -164,11 +164,28 @@ main { flex: 1; width: min(1100px, 100%); margin: 0 auto; padding: 16px; }
   background: color-mix(in oklab, var(--primary) 10%, transparent);
   transform: rotate(180deg) scale(1.1);
 }
+
+/* Theme toggle icon visibility */
+#themeToggle {
+  color: var(--text);
+}
+
+#themeToggle:hover {
+  color: var(--primary);
+}
+
+[data-theme="light"] #themeToggle {
+  color: var(--text);
+}
+
+[data-theme="dark"] #themeToggle {
+  color: var(--text);
+}
 .nav__links[data-open] { display: flex; position: fixed; inset: 56px 16px auto 16px; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px; flex-direction: column; }
 @media (min-width: 768px) { .nav__links { display: flex; } .nav__menu { display: none; } .nav__links[data-open] { position: static; background: transparent; box-shadow: none; padding: 0; flex-direction: row; } }
 
 .footer { border-top: 1px solid color-mix(in oklab, var(--text) 10%, transparent); }
-.footer__inner { width: min(1100px, 100%); margin: 0 auto; padding: 20px 16px; color: var(--muted); }
+.footer__inner { width: min(1100px, 100%); margin: 0 auto; padding: 20px 16px; color: var(--muted); text-align: center; }
 
 .hero { 
   padding: 48px 0 32px; 
@@ -200,6 +217,24 @@ main { flex: 1; width: min(1100px, 100%); margin: 0 auto; padding: 16px; }
   background-clip: text;
   letter-spacing: -0.02em;
   line-height: 1.1;
+  animation: heroTextFloat 4s ease-in-out infinite;
+}
+
+@keyframes heroTextFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .hero__content h1,
+  .register-hero__icon {
+    animation: none;
+  }
 }
 .hero__content p { 
   color: var(--muted); 
@@ -278,10 +313,10 @@ main { flex: 1; width: min(1100px, 100%); margin: 0 auto; padding: 16px; }
   padding: 24px 16px;
   background: var(--surface);
   border-radius: var(--radius);
-  margin: 24px 0;
-  border: 1px solid color-mix(in oklab, var(--text) 8%, transparent);
-  max-width: 600px;
   margin: 24px auto;
+  border: 1px solid color-mix(in oklab, var(--text) 8%, transparent);
+  max-width: 500px;
+  width: 100%;
 }
 .search__form input { 
   flex: 1; 
@@ -417,31 +452,25 @@ main { flex: 1; width: min(1100px, 100%); margin: 0 auto; padding: 16px; }
   cursor: pointer;
   font-family: var(--font-body);
   font-weight: 500;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.25s var(--easing-smooth);
-}
-.btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--gradient-primary);
-  opacity: 0;
-  transition: all 0.3s var(--easing-smooth);
-  z-index: -1;
+  transition: all 0.25s ease;
 }
 .btn--primary { 
   background: var(--gradient-primary); 
   color: #fff; 
   border: none;
   box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
 }
-.btn--primary::before {
-  background: linear-gradient(135deg, #9b7dff, var(--primary));
-  opacity: 1;
+
+.btn--primary:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 32px rgba(124,92,255,0.4);
+  background: linear-gradient(135deg, #9b7dff, #a688ff);
 }
-.btn--primary:hover::before {
-  transform: scale(1.1);
+
+.btn--primary:active {
+  transform: translateY(-1px) scale(1.02);
 }
 .btn--ghost { 
   background: transparent;
@@ -455,9 +484,6 @@ main { flex: 1; width: min(1100px, 100%); margin: 0 auto; padding: 16px; }
   transform: translateY(-2px) scale(1.02); 
   box-shadow: var(--shadow);
   border-color: var(--primary);
-}
-.btn:hover::before {
-  opacity: 0.1;
 }
 .btn:active { 
   transform: translateY(0) scale(0.98); 
@@ -774,4 +800,162 @@ main { flex: 1; width: min(1100px, 100%); margin: 0 auto; padding: 16px; }
 
 .hero__cta {
   margin-top: 24px;
+}
+
+/* Enhanced register page styles */
+.register-hero {
+  text-align: center;
+  padding: 48px 0 32px;
+  background: radial-gradient(800px 400px at 50% 20%, rgba(124,92,255,0.1), transparent);
+  margin: -16px -16px 32px -16px;
+}
+
+.register-hero__content {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.register-hero__icon {
+  font-size: 3rem;
+  color: var(--primary);
+  margin-bottom: 16px;
+  animation: heroTextFloat 4s ease-in-out infinite;
+}
+
+.register-hero h1 {
+  font-size: clamp(24px, 4vw, 36px);
+  font-family: var(--font-display);
+  font-weight: 800;
+  margin: 0 0 16px;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.register-hero p {
+  font-size: 1.125rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.register-benefits {
+  margin-bottom: 48px;
+}
+
+.register-benefits h2 {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--text);
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+@media (min-width: 768px) {
+  .benefits-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .benefits-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.benefit-card {
+  text-align: center;
+  padding: 24px 16px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in oklab, var(--text) 8%, transparent);
+  transition: all 0.3s ease;
+}
+
+.benefit-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow);
+  border-color: var(--primary);
+}
+
+.benefit-card__icon {
+  font-size: 2.5rem;
+  color: var(--primary);
+  margin-bottom: 16px;
+}
+
+.benefit-card h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: var(--text);
+}
+
+.benefit-card p {
+  color: var(--muted);
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.register-form-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.register-form-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.register-form-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--text);
+}
+
+.register-form-header p {
+  color: var(--muted);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.form--registration {
+  background: var(--surface);
+  border: 1px solid color-mix(in oklab, var(--text) 8%, transparent);
+  box-shadow: var(--shadow);
+}
+
+.form__actions {
+  text-align: center;
+  padding-top: 16px;
+  border-top: 1px solid color-mix(in oklab, var(--text) 8%, transparent);
+}
+
+.form__note {
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }

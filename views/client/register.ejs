@@ -1,80 +1,114 @@
-<section class="prose">
-  <div class="prose__header">
-    <i class="fa-duotone fa-user-plus prose__icon"></i>
-    <h1>Register as an Artist</h1>
+<div class="register-hero">
+  <div class="register-hero__content">
+    <div class="register-hero__icon">
+      <i class="fa-duotone fa-sparkles"></i>
+    </div>
+    <h1>Join the कला Family</h1>
+    <p>Turn your passion into a profession. Join hundreds of young artists who are already showcasing their talent to the world.</p>
   </div>
-  <p>Join our community of talented artists. Fill the form below and our team will contact you within a week to discuss your application.</p>
-  
-  <div class="benefits">
-    <div class="benefit">
-      <i class="fa-duotone fa-storefront benefit__icon"></i>
-      <span>Showcase your art to a global audience</span>
+</div>
+
+<section class="register-benefits">
+  <h2><i class="fa-duotone fa-heart"></i> Why Artists Love कला</h2>
+  <div class="benefits-grid">
+    <div class="benefit-card">
+      <div class="benefit-card__icon">
+        <i class="fa-duotone fa-store"></i>
+      </div>
+      <h3>Global Showcase</h3>
+      <p>Display your masterpieces to art lovers worldwide</p>
     </div>
-    <div class="benefit">
-      <i class="fa-duotone fa-coins benefit__icon"></i>
-      <span>Earn from your creativity</span>
+    <div class="benefit-card">
+      <div class="benefit-card__icon">
+        <i class="fa-duotone fa-coins"></i>
+      </div>
+      <h3>Earn Money</h3>
+      <p>Transform your creativity into a sustainable income</p>
     </div>
-    <div class="benefit">
-      <i class="fa-duotone fa-users benefit__icon"></i>
-      <span>Join a supportive artist community</span>
+    <div class="benefit-card">
+      <div class="benefit-card__icon">
+        <i class="fa-duotone fa-users-rays"></i>
+      </div>
+      <h3>Community</h3>
+      <p>Connect with fellow artists and art enthusiasts</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-card__icon">
+        <i class="fa-duotone fa-chart-line-up"></i>
+      </div>
+      <h3>Grow Together</h3>
+      <p>Get feedback and improve with our supportive community</p>
     </div>
   </div>
 </section>
 
-<form class="form form--registration" method="post" action="#">
-  <div class="form__section">
-    <h3><i class="fa-light fa-id-card"></i> Personal Information</h3>
-    <div class="form__grid">
-      <div class="field">
-        <label><i class="fa-light fa-user"></i> Full Name</label>
-        <input name="full_name" required>
-      </div>
-      <div class="field">
-        <label><i class="fa-light fa-cake-candles"></i> Age</label>
-        <input name="age" type="number" min="10" max="100" required>
-      </div>
-      <div class="field">
-        <label><i class="fa-light fa-calendar-clock"></i> Started art since</label>
-        <input name="started_art_since" type="number" min="1900" max="2100">
-      </div>
-      <div class="field">
-        <label><i class="fa-light fa-graduation-cap"></i> School</label>
-        <input name="school">
-      </div>
-      <div class="field field--full">
-        <label><i class="fa-light fa-location-dot"></i> Location</label>
-        <input name="location">
-      </div>
-    </div>
+<div class="register-form-container">
+  <div class="register-form-header">
+    <h2><i class="fa-light fa-user-plus"></i> Start Your Journey</h2>
+    <p>Tell us about yourself and we'll get back to you within 48 hours!</p>
   </div>
 
-  <div class="form__section">
-    <h3><i class="fa-light fa-address-book"></i> Contact Information</h3>
-    <div class="form__grid">
-      <div class="field">
-        <label><i class="fa-light fa-envelope"></i> Email</label>
-        <input name="contact_email" type="email">
-      </div>
-      <div class="field">
-        <label><i class="fa-light fa-phone"></i> Phone</label>
-        <input name="contact_phone" type="tel">
-      </div>
-      <div class="field">
-        <label><i class="fa-brands fa-instagram"></i> Instagram</label>
-        <input name="instagram" placeholder="@username">
+  <form class="form form--registration" method="post" action="#" id="registrationForm">
+    <div class="form__section">
+      <h3><i class="fa-light fa-id-card"></i> About You</h3>
+      <div class="form__grid">
+        <div class="field">
+          <label><i class="fa-light fa-user"></i> What's your name?</label>
+          <input name="full_name" placeholder="Enter your full name" required>
+        </div>
+        <div class="field">
+          <label><i class="fa-light fa-cake-candles"></i> How old are you?</label>
+          <input name="age" type="number" min="10" max="100" placeholder="Your age" required>
+        </div>
+        <div class="field">
+          <label><i class="fa-light fa-calendar-clock"></i> When did you start creating art?</label>
+          <input name="started_art_since" type="number" min="1900" max="2100" placeholder="Year you started">
+        </div>
+        <div class="field">
+          <label><i class="fa-light fa-graduation-cap"></i> Which school/college?</label>
+          <input name="school" placeholder="Your educational institution">
+        </div>
+        <div class="field field--full">
+          <label><i class="fa-light fa-location-dot"></i> Where are you from?</label>
+          <input name="location" placeholder="City, Country">
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="form__section">
-    <h3><i class="fa-light fa-message-lines"></i> Additional Information</h3>
-    <div class="field">
-      <label><i class="fa-light fa-comment-dots"></i> Tell us about your art journey</label>
-      <textarea name="extra_message" rows="4" placeholder="Share your artistic style, inspiration, goals, or anything else you'd like us to know..."></textarea>
+    <div class="form__section">
+      <h3><i class="fa-light fa-address-book"></i> Stay Connected</h3>
+      <div class="form__grid">
+        <div class="field">
+          <label><i class="fa-light fa-envelope"></i> Email address</label>
+          <input name="contact_email" type="email" placeholder="your.email@example.com">
+        </div>
+        <div class="field">
+          <label><i class="fa-light fa-phone"></i> Phone number</label>
+          <input name="contact_phone" type="tel" placeholder="+977 98xxxxxxxx">
+        </div>
+        <div class="field">
+          <label><i class="fa-brands fa-instagram"></i> Instagram handle</label>
+          <input name="instagram" placeholder="@your_artistic_handle">
+        </div>
+      </div>
     </div>
-  </div>
 
-  <button class="btn btn--primary btn--large" type="submit">
-    <i class="fa-light fa-paper-plane"></i> Submit Application
-  </button>
-</form>
+    <div class="form__section">
+      <h3><i class="fa-light fa-heart"></i> Your Art Story</h3>
+      <div class="field">
+        <label><i class="fa-light fa-comment-dots"></i> Tell us about your artistic journey</label>
+        <textarea name="extra_message" rows="5" placeholder="What inspires you? What's your style? What are your artistic goals? Share your story with us..."></textarea>
+      </div>
+    </div>
+
+    <div class="form__actions">
+      <button class="btn btn--primary btn--large" type="submit">
+        <i class="fa-light fa-paper-plane"></i> Join कला Today
+      </button>
+      <p class="form__note">
+        <i class="fa-light fa-info-circle"></i>
+        We'll review your application and get back to you within 48 hours
+      </p>
+    </div>
+  </form>
+</div>
