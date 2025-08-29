@@ -3,6 +3,17 @@ const router = express.Router();
 const dbService = require('../database/service');
 const { requireAuth, redirectIfAuth, rateLimitLogin, resetLoginAttempts } = require('../middleware/auth');
 
+// ============= ROOT ADMIN ROUTE =============
+
+// GET /admin/ - Redirect to appropriate page
+router.get('/', (req, res) => {
+  if (req.session.admin) {
+    res.redirect('/admin/dashboard');
+  } else {
+    res.redirect('/admin/login');
+  }
+});
+
 // ============= LOGIN ROUTES =============
 
 // GET /admin/login - Show login form
@@ -45,11 +56,8 @@ router.post('/login', redirectIfAuth, rateLimitLogin, async (req, res) => {
     // Reset login attempts on success
     resetLoginAttempts(req);
     
-    res.json({
-      success: true,
-      message: 'Login successful',
-      redirect: '/admin/dashboard'
-    });
+    // Redirect to dashboard on successful login
+    res.redirect('/admin/dashboard');
     
   } catch (error) {
     console.error('Login error:', error);
