@@ -35,14 +35,23 @@
   </div>
 </section>
 
-<section class="search">
+<section class="search" aria-label="Search artworks">
   <form class="search__form" role="search">
     <div class="search__input-wrapper">
-      <i class="fa-light fa-magnifying-glass search__icon"></i>
-      <input type="search" name="q" placeholder="Search artworks, artists, styles…" aria-label="Search" />
+      <label for="search-input" class="sr-only">Search artworks</label>
+      <i class="fa-light fa-magnifying-glass search__icon" aria-hidden="true"></i>
+      <input 
+        type="search" 
+        id="search-input"
+        name="q" 
+        placeholder="Search artworks, artists, styles…" 
+        aria-label="Search artworks, artists, and styles"
+        autocomplete="off"
+        spellcheck="false"
+      />
     </div>
-    <button class="btn" type="submit">
-      <i class="fa-sharp fa-solid fa-arrow-right"></i>
+    <button class="btn" type="submit" aria-label="Submit search">
+      <i class="fa-sharp fa-solid fa-arrow-right" aria-hidden="true"></i>
       <span>Search</span>
     </button>
   </form>
@@ -50,19 +59,28 @@
 
 <section class="grid" id="grid" aria-label="Artworks">
   <div class="grid__header">
-    <h2><i class="fa-light fa-grid-2"></i> Featured Artworks</h2>
+    <h2><i class="fa-light fa-grid-2"></i> Latest Artworks</h2>
     <div class="grid__filters">
-      <button class="btn btn--ghost active">
-        <i class="fa-light fa-sparkles"></i> All
+      <button class="btn btn--ghost active" data-filter="all">
+        <i class="fa-light fa-layer-group"></i> All Types
       </button>
-      <button class="btn btn--ghost">
+      <button class="btn btn--ghost" data-filter="sketch">
         <i class="fa-light fa-pencil"></i> Sketches
       </button>
-      <button class="btn btn--ghost">
+      <button class="btn btn--ghost" data-filter="painting">
         <i class="fa-light fa-palette"></i> Paintings
       </button>
-      <button class="btn btn--ghost">
+      <button class="btn btn--ghost" data-filter="portrait">
         <i class="fa-light fa-user-tie"></i> Portraits
+      </button>
+      <button class="btn btn--ghost" data-filter="digital">
+        <i class="fa-light fa-tablet-screen-button"></i> Digital
+      </button>
+      <button class="btn btn--ghost" data-sort="price-low">
+        <i class="fa-light fa-arrow-up-short-wide"></i> Price: Low to High
+      </button>
+      <button class="btn btn--ghost" data-sort="price-high">
+        <i class="fa-light fa-arrow-down-wide-short"></i> Price: High to Low
       </button>
     </div>
   </div>

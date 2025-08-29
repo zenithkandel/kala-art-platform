@@ -17,23 +17,25 @@
     });
   }
 
-  // Enhanced reveal-on-scroll with staggered animations
+  // Enhanced reveal-on-scroll with simple animations
   const io = new IntersectionObserver((entries) => {
-    entries.forEach((e, index) => {
+    entries.forEach((e) => {
       if(e.isIntersecting){ 
-        // Add stagger delay based on index
-        const delay = index * 100;
-        setTimeout(() => {
-          e.target.setAttribute('data-inview','');
-          e.target.classList.add('animate-fadeInUp');
-        }, delay);
+        e.target.setAttribute('data-inview','');
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
         io.unobserve(e.target); 
       }
     });
   }, { rootMargin: '0px 0px -5% 0px', threshold: 0.15 });
   
-  // Observe cards and other elements
-  document.querySelectorAll('.card, .stat, .form').forEach(el => io.observe(el));
+  // Observe cards and other elements with initial hidden state
+  document.querySelectorAll('.card, .stat, .form').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    io.observe(el);
+  });
 
   // Enhanced smooth scroll for anchor links
   document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', (e) => {
@@ -48,23 +50,17 @@
     }
   }));
 
-  // Add micro-interactions to buttons
+  // Simple button hover effects
   document.querySelectorAll('.btn').forEach(btn => {
     btn.addEventListener('mouseenter', () => {
-      btn.classList.add('micro-bounce');
+      btn.style.transform = 'translateY(-2px) scale(1.02)';
     });
-    btn.addEventListener('animationend', () => {
-      btn.classList.remove('micro-bounce');
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transform = '';
     });
   });
 
-  // Add floating animation to hero elements
-  const heroElements = document.querySelectorAll('.hero__content h1, .nav__brand i');
-  heroElements.forEach(el => {
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      el.classList.add('animate-float');
-    }
-  });
+  // Remove floating animations for cleaner look
 
   // Progressive enhancement for stats counter animation
   const statNumbers = document.querySelectorAll('.stat__num');

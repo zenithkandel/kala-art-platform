@@ -21,17 +21,17 @@
     mouse.y = e.clientY * pxRatio;
   });
 
-  const N = Math.max(30, Math.min(60, Math.floor((window.innerWidth*window.innerHeight)/50000)));
+  const N = Math.max(8, Math.min(15, Math.floor((window.innerWidth*window.innerHeight)/200000)));
   const parts = Array.from({length:N}, () => ({
     x: Math.random()*w, 
     y: Math.random()*h,
-    vx: (Math.random()-.5)*0.2*pxRatio, 
-    vy: (Math.random()-.5)*0.2*pxRatio,
-    r: (Math.random()*2 + 0.5)*pxRatio, 
-    a: Math.random()*0.8 + 0.2,
+    vx: (Math.random()-.5)*0.1*pxRatio, 
+    vy: (Math.random()-.5)*0.1*pxRatio,
+    r: (Math.random()*1.5 + 0.3)*pxRatio, 
+    a: Math.random()*0.4 + 0.1,
     color: Math.random() < 0.7 ? [124,92,255] : [74,214,184], // mix primary and accent
     phase: Math.random() * Math.PI * 2, // for pulsing
-    pulse: Math.random() * 0.02 + 0.01
+    pulse: Math.random() * 0.01 + 0.005
   }));
 
   let raf, last=0;
@@ -51,62 +51,26 @@
       if(p.x<0||p.x>w) p.vx*=-1; 
       if(p.y<0||p.y>h) p.vy*=-1;
       
-      // Mouse interaction - subtle attraction
+      // Mouse interaction - very subtle attraction
       const dx = mouse.x - p.x;
       const dy = mouse.y - p.y;
       const dist = Math.sqrt(dx*dx + dy*dy);
-      if(dist < 200*pxRatio) {
-        const force = (200*pxRatio - dist) / (200*pxRatio);
-        p.vx += dx * force * 0.0001;
-        p.vy += dy * force * 0.0001;
+      if(dist < 150*pxRatio) {
+        const force = (150*pxRatio - dist) / (150*pxRatio);
+        p.vx += dx * force * 0.00005;
+        p.vy += dy * force * 0.00005;
       }
       
-      // Update pulse phase
-      p.phase += p.pulse;
-      const pulseScale = 1 + Math.sin(p.phase) * 0.3;
-      
-      // Draw particle with enhanced effects
+      // Simple core particle - no pulse
       ctx.save();
-      ctx.globalAlpha = p.a * (0.7 + Math.sin(p.phase) * 0.3);
-      
-      // Glow effect
-      const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * pulseScale * 3);
-      gradient.addColorStop(0, `rgba(${p.color[0]},${p.color[1]},${p.color[2]},0.8)`);
-      gradient.addColorStop(0.5, `rgba(${p.color[0]},${p.color[1]},${p.color[2]},0.3)`);
-      gradient.addColorStop(1, `rgba(${p.color[0]},${p.color[1]},${p.color[2]},0)`);
-      
-      ctx.fillStyle = gradient;
+      ctx.globalAlpha = p.a;
+      ctx.fillStyle = `rgba(${p.color[0]},${p.color[1]},${p.color[2]},0.6)`;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r * pulseScale * 3, 0, Math.PI*2);
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
       ctx.fill();
-      
-      // Core particle
-      ctx.fillStyle = `rgba(${p.color[0]},${p.color[1]},${p.color[2]},1)`;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r * pulseScale, 0, Math.PI*2);
-      ctx.fill();
-      
       ctx.restore();
       
-      // Draw connections to nearby particles
-      for(let j = i + 1; j < parts.length; j++) {
-        const other = parts[j];
-        const dx2 = p.x - other.x;
-        const dy2 = p.y - other.y;
-        const dist2 = Math.sqrt(dx2*dx2 + dy2*dy2);
-        
-        if(dist2 < 120*pxRatio) {
-          ctx.save();
-          ctx.globalAlpha = (120*pxRatio - dist2) / (120*pxRatio) * 0.15;
-          ctx.strokeStyle = `rgba(${p.color[0]},${p.color[1]},${p.color[2]},1)`;
-          ctx.lineWidth = 0.5*pxRatio;
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(other.x, other.y);
-          ctx.stroke();
-          ctx.restore();
-        }
-      }
+      // Draw connections to nearby particles - removed for cleaner look
     });
     
     raf = requestAnimationFrame(step);
