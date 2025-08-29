@@ -1,6 +1,117 @@
 const { query, queryOne, transaction } = require('./connection');
+const bcrypt = require('bcrypt');
 
 class DatabaseService {
+  // ============= ADMIN METHODS =============
+  
+  async createAdmin(username, password, email = null) {
+    const passwordHash = await bcrypt.hash(password, 12);
+    const result = await query(
+      'INSERT INTO admins (username, password_hash, email) VALUES (?, ?, ?)',
+      [username, passwordHash, email]
+    );
+    return result.insertId;
+  }
+  
+  async getAdminByUsername(username) {
+    return await queryOne(
+      'SELECT admin_id, username, password_hash, email, last_login_at, created_at FROM admins WHERE username = ?',
+      [username]
+    );
+  }
+  
+  async updateAdminLastLogin(adminId) {
+    await query(
+      'UPDATE admins SET last_login_at = CURRENT_TIMESTAMP WHERE admin_id = ?',
+      [adminId]
+    );
+  }
+  
+  async verifyAdminPassword(username, password) {
+    const admin = await this.getAdminByUsername(username);
+    if (!admin) return null;
+    
+    const isValid = await bcrypt.compare(password, admin.password_hash);
+    if (!isValid) return null;
+    
+    await this.updateAdminLastLogin(admin.admin_id);
+    return {
+      admin_id: admin.admin_id,
+      username: admin.username,
+      email: admin.email,
+      last_login_at: admin.last_login_at
+    };
+  }
+  
+  // ============= DASHBOARD ANALYTICS =============
+  
+  async getDashboardStats() {
+    try {
+      const stats = {};
+      
+      // Total site views
+      const totalViews = await queryOne('SELECT SUM(views) as total FROM page_views_daily');
+      stats.totalViews = totalViews?.total || 0;
+      
+      // Total sellable arts (active)
+      const sellableArts = await queryOne('SELECT COUNT(*) as count FROM arts WHERE deleted_at IS NULL AND status = "active"');
+      stats.sellableArts = sellableArts?.count || 0;
+      
+      // Total sold arts (delivered orders)
+      const soldArts = await queryOne('SELECT COUNT(*) as count FROM orders WHERE deleted_at IS NULL AND status = "delivered"');
+      stats.soldArts = soldArts?.count || 0;
+      
+      // Active artists (approved)
+      const activeArtists = await queryOne('SELECT COUNT(*) as count FROM artists WHERE deleted_at IS NULL AND status = "approved"');
+      stats.activeArtists = activeArtists?.count || 0;
+      
+      // Contact messages (total)
+      const contactMessages = await queryOne('SELECT COUNT(*) as count FROM contact_messages WHERE deleted_at IS NULL');
+      stats.contactMessages = contactMessages?.count || 0;
+      
+      // Active buying requests (pending delivery)
+      const activeBuyingRequests = await queryOne(`
+        SELECT COUNT(*) as count FROM orders 
+        WHERE deleted_at IS NULL AND status IN ('received', 'viewed', 'contacted', 'delivering')
+      `);
+      stats.activeBuyingRequests = activeBuyingRequests?.count || 0;
+      
+      // Artist applications (pending)
+      const artistApplications = await queryOne('SELECT COUNT(*) as count FROM artist_applications WHERE status = "pending"');
+      stats.artistApplications = artistApplications?.count || 0;
+      
+      // Recent activities for dashboard
+      const recentOrders = await query(`
+        SELECT order_id, order_code, buyer_name, total_amount, status, created_at 
+        FROM orders WHERE deleted_at IS NULL 
+        ORDER BY created_at DESC LIMIT 5
+      `);
+      stats.recentOrders = recentOrders || [];
+      
+      const recentApplications = await query(`
+        SELECT application_id, full_name, contact_email, specialty, status, submitted_at 
+        FROM artist_applications 
+        ORDER BY submitted_at DESC LIMIT 5
+      `);
+      stats.recentApplications = recentApplications || [];
+      
+      return stats;
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+      return {
+        totalViews: 0,
+        sellableArts: 0,
+        soldArts: 0,
+        activeArtists: 0,
+        contactMessages: 0,
+        activeBuyingRequests: 0,
+        artistApplications: 0,
+        recentOrders: [],
+        recentApplications: []
+      };
+    }
+  }
+
   // ============= ARTIST METHODS =============
   
   async createArtist(data) {
