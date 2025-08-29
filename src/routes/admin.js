@@ -155,6 +155,26 @@ router.get('/artists/applications', requireAuth, async (req, res) => {
   }
 });
 
+// GET /admin/applications - Shortcut to artist applications (for sidebar link)
+router.get('/applications', requireAuth, async (req, res) => {
+  try {
+    const applications = await dbService.getArtistApplications();
+    
+    res.render('admin/applications', {
+      title: 'Artist Applications - कला Admin',
+      applications,
+      layout: false
+    });
+  } catch (error) {
+    console.error('Applications list error:', error);
+    res.status(500).render('admin/error', {
+      title: 'Error - कला Admin',
+      message: 'Failed to load applications',
+      layout: false
+    });
+  }
+});
+
 // POST /admin/artists/applications/:id/approve - Approve application
 router.post('/artists/applications/:id/approve', requireAuth, async (req, res) => {
   try {
@@ -352,6 +372,37 @@ router.get('/api/stats', requireAuth, async (req, res) => {
       message: 'Failed to fetch stats'
     });
   }
+});
+
+// Admin Orders Page
+router.get('/orders', requireAuth, async (req, res) => {
+    try {
+        const orders = await dbService.getAllOrders();
+        res.render('admin/orders', { orders });
+    } catch (error) {
+        console.error('Error loading orders:', error);
+        res.render('admin/orders', { orders: [] });
+    }
+});
+
+// Admin Analytics Page
+router.get('/analytics', requireAuth, async (req, res) => {
+    try {
+        const analytics = await dbService.getAnalyticsData();
+        res.render('admin/analytics', { analytics });
+    } catch (error) {
+        console.error('Error loading analytics:', error);
+        res.render('admin/analytics', { 
+            analytics: {
+                totalViews: 0,
+                totalArtists: 0,
+                totalArtworks: 0,
+                totalOrders: 0,
+                topArtists: [],
+                recentActivity: []
+            }
+        });
+    }
 });
 
 module.exports = router;

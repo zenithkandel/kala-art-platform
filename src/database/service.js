@@ -320,6 +320,73 @@ class DatabaseService {
     return stats;
   }
   
+  async getAllOrders() {
+    return await query(`
+      SELECT 
+        o.*,
+        COUNT(oi.order_item_id) as item_count
+      FROM orders o
+      LEFT JOIN order_items oi ON o.order_id = oi.order_id
+      GROUP BY o.order_id
+      ORDER BY o.created_at DESC
+    `);
+  }
+  
+  async getAnalyticsData() {
+    try {
+      // Get basic stats
+      const [artistCount] = await query('SELECT COUNT(*) as count FROM artists WHERE status = "approved"');
+      const [artworkCount] = await query('SELECT COUNT(*) as count FROM arts');
+      const [orderCount] = await query('SELECT COUNT(*) as count FROM orders');
+      const [viewCount] = await query('SELECT SUM(views) as count FROM page_views_daily');
+      
+      // Get top artists
+      const topArtists = await query(`
+        SELECT 
+          a.full_name as name,
+          COUNT(arts.art_id) as artCount,
+          COALESCE(SUM(oi.quantity * oi.unit_price), 0) as totalRevenue
+        FROM artists a
+        LEFT JOIN arts ON a.artist_id = arts.artist_id
+        LEFT JOIN order_items oi ON arts.art_id = oi.art_id
+        WHERE a.status = 'approved'
+        GROUP BY a.artist_id
+        ORDER BY totalRevenue DESC, artCount DESC
+        LIMIT 5
+      `);
+      
+      // Get recent activity (simplified)
+      const recentActivity = await query(`
+        SELECT 
+          'order' as type,
+          CONCAT('New order from ', buyer_name) as description,
+          created_at
+        FROM orders
+        ORDER BY created_at DESC
+        LIMIT 10
+      `);
+      
+      return {
+        totalViews: viewCount.count || 0,
+        totalArtists: artistCount.count || 0,
+        totalArtworks: artworkCount.count || 0,
+        totalOrders: orderCount.count || 0,
+        topArtists: topArtists || [],
+        recentActivity: recentActivity || []
+      };
+    } catch (error) {
+      console.error('Error getting analytics data:', error);
+      return {
+        totalViews: 0,
+        totalArtists: 0,
+        totalArtworks: 0,
+        totalOrders: 0,
+        topArtists: [],
+        recentActivity: []
+      };
+    }
+  }
+  
   async recordPageView(date = null) {
     const viewDate = date || new Date().toISOString().split('T')[0];
     await query(
