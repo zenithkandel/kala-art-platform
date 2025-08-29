@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const dbService = require('../database/service');
+const dbService = require('../services/databaseService');
 
 // Admin authentication middleware
 const requireAdminAuth = (req, res, next) => {
