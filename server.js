@@ -76,8 +76,15 @@ app.use(async (req, res, next) => {
 // Routes
 const clientRoutes = require('./src/routes/client');
 const adminRoutes = require('./src/routes/admin');
+
+// Use main layout for client routes
 app.use('/', clientRoutes);
-app.use('/admin', adminRoutes);
+
+// Disable layouts for admin routes
+app.use('/admin', (req, res, next) => {
+  res.locals.layout = false;
+  next();
+}, adminRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -85,7 +92,7 @@ app.use((req, res) => {
     res.status(404).render('admin/error', {
       title: '404 - Page Not Found',
       message: 'Admin page not found',
-      layout: 'admin/layout'
+      layout: false
     });
   } else {
     res.status(404).render('misc/404', { title: 'Not Found' });
@@ -104,7 +111,7 @@ app.use((err, req, res, next) => {
     res.status(500).render('admin/error', {
       title: '500 - Server Error',
       message,
-      layout: 'admin/layout'
+      layout: false // No layout for admin error page
     });
   } else {
     res.status(500).render('misc/error', {

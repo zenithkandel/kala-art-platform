@@ -10,7 +10,7 @@ router.get('/login', redirectIfAuth, (req, res) => {
   res.render('admin/login', {
     title: 'Admin Login - कला',
     error: req.query.error,
-    layout: 'admin/layout'
+    layout: false
   });
 });
 
@@ -89,14 +89,14 @@ router.get('/dashboard', requireAuth, async (req, res) => {
     res.render('admin/dashboard', {
       title: 'Dashboard - कला Admin',
       stats,
-      layout: 'admin/layout'
+      layout: false
     });
   } catch (error) {
     console.error('Dashboard error:', error);
     res.status(500).render('admin/error', {
       title: 'Error - कला Admin',
       message: 'Failed to load dashboard data',
-      layout: 'admin/layout'
+      layout: false
     });
   }
 });
@@ -111,14 +111,14 @@ router.get('/artists', requireAuth, async (req, res) => {
     res.render('admin/artists/list', {
       title: 'Artists - कला Admin',
       artists,
-      layout: 'admin/layout'
+      layout: false
     });
   } catch (error) {
     console.error('Artists list error:', error);
     res.status(500).render('admin/error', {
       title: 'Error - कला Admin',
       message: 'Failed to load artists',
-      layout: 'admin/layout'
+      layout: false
     });
   }
 });
@@ -131,14 +131,14 @@ router.get('/artists/applications', requireAuth, async (req, res) => {
     res.render('admin/artists/applications', {
       title: 'Artist Applications - कला Admin',
       applications,
-      layout: 'admin/layout'
+      layout: false
     });
   } catch (error) {
     console.error('Applications list error:', error);
     res.status(500).render('admin/error', {
       title: 'Error - कला Admin',
       message: 'Failed to load applications',
-      layout: 'admin/layout'
+      layout: false
     });
   }
 });
@@ -191,14 +191,14 @@ router.get('/artworks', requireAuth, async (req, res) => {
     res.render('admin/artworks/list', {
       title: 'Artworks - कला Admin',
       artworks,
-      layout: 'admin/layout'
+      layout: false
     });
   } catch (error) {
     console.error('Artworks list error:', error);
     res.status(500).render('admin/error', {
       title: 'Error - कला Admin',
       message: 'Failed to load artworks',
-      layout: 'admin/layout'
+      layout: false
     });
   }
 });
@@ -213,14 +213,14 @@ router.get('/orders', requireAuth, async (req, res) => {
     res.render('admin/orders/list', {
       title: 'Orders - कला Admin',
       orders,
-      layout: 'admin/layout'
+      layout: false
     });
   } catch (error) {
     console.error('Orders list error:', error);
     res.status(500).render('admin/error', {
       title: 'Error - कला Admin',
       message: 'Failed to load orders',
-      layout: 'admin/layout'
+      layout: false
     });
   }
 });
@@ -236,7 +236,7 @@ router.get('/orders/:id', requireAuth, async (req, res) => {
       return res.status(404).render('admin/error', {
         title: 'Order Not Found - कला Admin',
         message: 'Order not found',
-        layout: 'admin/layout'
+        layout: false
       });
     }
     
@@ -244,14 +244,14 @@ router.get('/orders/:id', requireAuth, async (req, res) => {
       title: `Order ${order.order_code} - कला Admin`,
       order,
       orderItems,
-      layout: 'admin/layout'
+      layout: false
     });
   } catch (error) {
     console.error('Order detail error:', error);
     res.status(500).render('admin/error', {
       title: 'Error - कला Admin',
       message: 'Failed to load order details',
-      layout: 'admin/layout'
+      layout: false
     });
   }
 });
@@ -295,14 +295,14 @@ router.get('/messages', requireAuth, async (req, res) => {
     res.render('admin/messages/list', {
       title: 'Contact Messages - कला Admin',
       messages,
-      layout: 'admin/layout'
+      layout: false
     });
   } catch (error) {
     console.error('Messages list error:', error);
     res.status(500).render('admin/error', {
       title: 'Error - कला Admin',
       message: 'Failed to load messages',
-      layout: 'admin/layout'
+      layout: false
     });
   }
 });
