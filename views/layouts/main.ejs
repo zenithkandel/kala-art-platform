@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <% include ../partials/head %>
+    <title><%= title ? (title + ' · ' + appName) : appName %></title>
+  </head>
+  <body>
+    <div id="app">
+      <% include ../partials/navbar %>
+      <main id="main" tabindex="-1">
+        <%- body %>
+      </main>
+      <% include ../partials/footer %>
+    </div>
+    <script src="/public/js/theme.js"></script>
+    <script src="/public/js/ui.js"></script>
+  </body>
+  </html>

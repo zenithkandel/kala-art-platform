@@ -1,0 +1,20 @@
+<section class="prose">
+  <h1>Register as an Artist</h1>
+  <p>Fill the form and our team will contact you within a week.</p>
+</section>
+
+<form class="form" method="post" action="#">
+  <div class="field"><label>Full Name<input name="full_name" required></label></div>
+  <div class="field"><label>Age<input name="age" type="number" min="10" max="100" required></label></div>
+  <div class="field"><label>Started art since<input name="started_art_since" type="number" min="1900" max="2100"></label></div>
+  <div class="field"><label>School<input name="school"></label></div>
+  <div class="field"><label>Location<input name="location"></label></div>
+  <div class="field"><label>Extra message<textarea name="extra_message" rows="4"></textarea></label></div>
+  <fieldset class="fieldset">
+    <legend>Contact</legend>
+    <div class="field"><label>Email<input name="contact_email" type="email"></label></div>
+    <div class="field"><label>Phone<input name="contact_phone" type="tel"></label></div>
+    <div class="field"><label>Instagram<input name="instagram" placeholder="@username"></label></div>
+  </fieldset>
+  <button class="btn" type="submit">Submit Application</button>
+</form>
