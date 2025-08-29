@@ -5,7 +5,7 @@ const dbConfig = {
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'art_gallery'
+  database: 'kala'
 };
 
 // Create connection pool
