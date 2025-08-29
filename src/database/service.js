@@ -287,6 +287,10 @@ class DatabaseService {
     const artistCount = await queryOne('SELECT COUNT(*) as count FROM artists WHERE deleted_at IS NULL');
     stats.totalArtists = artistCount.count;
     
+    // Approved artists
+    const approvedArtistCount = await queryOne('SELECT COUNT(*) as count FROM artists WHERE deleted_at IS NULL AND status = ?', ['active']);
+    stats.approvedArtists = approvedArtistCount.count;
+    
     // Total arts
     const artCount = await queryOne('SELECT COUNT(*) as count FROM arts WHERE deleted_at IS NULL');
     stats.totalArts = artCount.count;
@@ -298,6 +302,11 @@ class DatabaseService {
     // Pending applications
     const pendingApps = await queryOne('SELECT COUNT(*) as count FROM artist_applications WHERE status = ?', ['pending']);
     stats.pendingApplications = pendingApps.count;
+    
+    // Recent applications
+    stats.recentApplications = await query(
+      'SELECT application_id, full_name, contact_email, age, location, status, submitted_at FROM artist_applications ORDER BY submitted_at DESC LIMIT 5'
+    );
     
     // Recent orders
     stats.recentOrders = await query(

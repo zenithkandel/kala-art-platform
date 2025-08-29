@@ -212,7 +212,7 @@
                                         <tr>
                                             <th>Artist Name</th>
                                             <th>Email</th>
-                                            <th>Art Type</th>
+                                            <th>Location</th>
                                             <th>Status</th>
                                             <th>Date</th>
                                         </tr>
@@ -220,15 +220,15 @@
                                     <tbody>
                                         <% recentApplications.forEach(application => { %>
                                             <tr>
-                                                <td><%= application.name %></td>
-                                                <td><%= application.email %></td>
-                                                <td><%= application.art_type %></td>
+                                                <td><%= application.full_name %></td>
+                                                <td><%= application.contact_email %></td>
+                                                <td><%= application.location || 'N/A' %></td>
                                                 <td>
                                                     <span class="badge bg-<%= application.status === 'approved' ? 'success' : application.status === 'rejected' ? 'danger' : 'warning' %>">
                                                         <%= application.status %>
                                                     </span>
                                                 </td>
-                                                <td><%= new Date(application.created_at).toLocaleDateString() %></td>
+                                                <td><%= new Date(application.submitted_at).toLocaleDateString() %></td>
                                             </tr>
                                         <% }); %>
                                     </tbody>

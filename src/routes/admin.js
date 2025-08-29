@@ -31,18 +31,20 @@ router.post('/login', redirectIfAuth, rateLimitLogin, async (req, res) => {
     const { username, password } = req.body;
     
     if (!username || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Username and password are required'
+      return res.render('admin/login', {
+        title: 'Admin Login - कला',
+        error: 'Username and password are required',
+        layout: false
       });
     }
     
     const admin = await dbService.verifyAdminPassword(username, password);
     
     if (!admin) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid username or password'
+      return res.render('admin/login', {
+        title: 'Admin Login - कला',
+        error: 'Invalid username or password',
+        layout: false
       });
     }
     
@@ -61,9 +63,10 @@ router.post('/login', redirectIfAuth, rateLimitLogin, async (req, res) => {
     
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred during login'
+    res.render('admin/login', {
+      title: 'Admin Login - कला',
+      error: 'An error occurred during login',
+      layout: false
     });
   }
 });
@@ -97,6 +100,7 @@ router.get('/dashboard', requireAuth, async (req, res) => {
     res.render('admin/dashboard', {
       title: 'Dashboard - कला Admin',
       stats,
+      recentApplications: stats.recentApplications || [],
       layout: false
     });
   } catch (error) {
