@@ -1,14 +1,20 @@
 <header class="top-bar">
     <div class="user-info">
-        <span>Welcome, <%= admin.username %></span>
+        <% if (admin) { %>
+            <span>Welcome, <%= admin.username %></span>
+        <% } else { %>
+            <span>Admin Panel</span>
+        <% } %>
     </div>
     <div class="header-actions">
         <button id="theme-toggle" class="theme-btn">
             <i class="fas fa-moon"></i>
             <i class="fas fa-sun"></i>
         </button>
-        <form action="/admin/logout" method="POST">
-            <button type="submit" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </form>
+        <% if (admin) { %>
+            <form action="/admin/logout" method="POST">
+                <button type="submit" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </form>
+        <% } %>
     </div>
 </header>

@@ -3,6 +3,11 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const db = require('../services/databaseService'); // Assuming you have a database service
 
+// GET /admin - Redirect to dashboard
+router.get('/', (req, res) => {
+    res.redirect('/admin/dashboard');
+});
+
 // GET /admin/login - Render login page
 router.get('/login', (req, res) => {
     if (req.session.admin) {
@@ -34,6 +39,17 @@ router.post('/login', async (req, res) => {
         console.error(err);
         res.status(500).send('Server Error');
     }
+});
+
+// POST /admin/logout - Handle logout
+router.post('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.redirect('/admin/dashboard');
+        }
+        res.clearCookie('connect.sid');
+        res.redirect('/admin/login');
+    });
 });
 
 // Middleware to protect admin routes
