@@ -1,24 +1,83 @@
-<!-- Hero Section -->
+<!-- Hero Section with Mission -->
 <section class="about-hero">
+  <div class="about-hero__background">
+    <div class="about-hero__particles"></div>
+  </div>
   <div class="about-hero__content">
-    <div class="about-hero__text">
-      <h1><i class="fa-duotone fa-heart-pulse"></i> About कला</h1>
-      <p class="about-hero__subtitle">Empowering young artists to share their creativity with the world</p>
-    </div>
-    <div class="about-hero__visual">
-      <div class="about-hero__card">
-        <i class="fa-duotone fa-palette"></i>
+    <div class="about-hero__main">
+      <div class="about-hero__badge">
+        <i class="fa-duotone fa-sparkles"></i>
         <span>Art Platform</span>
       </div>
-    </div>
-  </div>
-</section>
+      <h1>About <span class="gradient-text">कला</span></h1>
+      <p class="about-hero__subtitle">Empowering young artists to share their creativity with the world</p>
+      
+      <div class="about-hero__description">
+        <p>कला is an online platform dedicated to showcasing and selling exceptional art by talented young artists. We believe in nurturing creativity and providing a dynamic space where emerging talent can flourish and connect with art enthusiasts worldwide.</p>
+      </div>
 
-<!-- Mission Section -->
-<section class="mission">
-  <div class="mission__content">
-    <h2><i class="fa-duotone fa-bullseye-arrow"></i> Our Mission</h2>
-    <p class="mission__text">कला is an online platform dedicated to showcasing and selling exceptional art by talented young artists. We believe in nurturing creativity and providing a dynamic space where emerging talent can flourish and connect with art enthusiasts worldwide.</p>
+      <div class="about-hero__features">
+        <div class="hero-feature">
+          <div class="hero-feature__icon">
+            <i class="fa-duotone fa-sparkles"></i>
+          </div>
+          <div class="hero-feature__content">
+            <h3>Discover Talent</h3>
+            <p>Fresh perspectives from emerging artists</p>
+          </div>
+        </div>
+        <div class="hero-feature">
+          <div class="hero-feature__icon">
+            <i class="fa-duotone fa-shield-check"></i>
+          </div>
+          <div class="hero-feature__content">
+            <h3>Quality Assured</h3>
+            <p>Curated and authenticated artworks</p>
+          </div>
+        </div>
+        <div class="hero-feature">
+          <div class="hero-feature__icon">
+            <i class="fa-duotone fa-handshake"></i>
+          </div>
+          <div class="hero-feature__content">
+            <h3>Support Artists</h3>
+            <p>Direct support for creative journeys</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="about-hero__visual">
+      <div class="about-hero__stats-grid">
+        <div class="hero-stat-card">
+          <div class="hero-stat-card__number">500+</div>
+          <div class="hero-stat-card__label">Artworks</div>
+          <div class="hero-stat-card__icon"><i class="fa-duotone fa-paintbrush"></i></div>
+        </div>
+        <div class="hero-stat-card">
+          <div class="hero-stat-card__number">150+</div>
+          <div class="hero-stat-card__label">Artists</div>
+          <div class="hero-stat-card__icon"><i class="fa-duotone fa-users-rays"></i></div>
+        </div>
+        <div class="hero-stat-card">
+          <div class="hero-stat-card__number">1000+</div>
+          <div class="hero-stat-card__label">Collectors</div>
+          <div class="hero-stat-card__icon"><i class="fa-duotone fa-heart"></i></div>
+        </div>
+        <div class="hero-stat-card">
+          <div class="hero-stat-card__number">25+</div>
+          <div class="hero-stat-card__label">Countries</div>
+          <div class="hero-stat-card__icon"><i class="fa-duotone fa-earth"></i></div>
+        </div>
+      </div>
+      
+      <div class="about-hero__floating-card">
+        <div class="floating-card__inner">
+          <i class="fa-duotone fa-palette"></i>
+          <span>Art Platform</span>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -122,7 +181,7 @@
     </div>
     <div class="value-card">
       <div class="value-card__header">
-        <i class="fa-duotone fa-scales-balanced"></i>
+        <i class="fa-duotone fa-shield-check"></i>
         <h3>Fair & Transparent</h3>
       </div>
       <p>Artists receive fair compensation and collectors get transparent pricing with no hidden fees.</p>
@@ -139,36 +198,38 @@
 
 <!-- Contact Section -->
 <section class="contact">
-  <div class="contact__header">
-    <i class="fa-duotone fa-messages contact__icon"></i>
-    <h2>Get In Touch</h2>
-    <p>Have questions, suggestions, or want to collaborate? We'd love to hear from you.</p>
-  </div>
-  <form class="form" method="post" action="#">
-    <div class="form__grid">
-      <div class="field">
-        <label><i class="fa-light fa-user"></i> Name</label>
-        <input type="text" name="full_name" required>
-      </div>
-      <div class="field">
-        <label><i class="fa-light fa-envelope"></i> Email</label>
-        <input type="email" name="email" required>
-      </div>
-      <div class="field">
-        <label><i class="fa-light fa-phone"></i> Phone</label>
-        <input type="tel" name="phone">
-      </div>
-      <div class="field">
-        <label><i class="fa-light fa-tag"></i> Subject</label>
-        <input type="text" name="subject">
-      </div>
-      <div class="field field--full">
-        <label><i class="fa-light fa-message"></i> Message</label>
-        <textarea name="message" rows="4" required></textarea>
-      </div>
+  <div class="contact__container">
+    <div class="contact__header">
+      <i class="fa-duotone fa-messages contact__icon"></i>
+      <h2>Get In Touch</h2>
+      <p>Have questions, suggestions, or want to collaborate? We'd love to hear from you.</p>
     </div>
-    <button class="btn btn--primary" type="submit">
-      <i class="fa-light fa-paper-plane"></i> Send Message
-    </button>
-  </form>
+    <form class="form" method="post" action="#">
+      <div class="form__grid">
+        <div class="field">
+          <label><i class="fa-light fa-user"></i> Name</label>
+          <input type="text" name="full_name" required>
+        </div>
+        <div class="field">
+          <label><i class="fa-light fa-envelope"></i> Email</label>
+          <input type="email" name="email" required>
+        </div>
+        <div class="field">
+          <label><i class="fa-light fa-phone"></i> Phone</label>
+          <input type="tel" name="phone">
+        </div>
+        <div class="field">
+          <label><i class="fa-light fa-tag"></i> Subject</label>
+          <input type="text" name="subject">
+        </div>
+        <div class="field field--full">
+          <label><i class="fa-light fa-message"></i> Message</label>
+          <textarea name="message" rows="4" required></textarea>
+        </div>
+      </div>
+      <button class="btn btn--primary" type="submit">
+        <i class="fa-light fa-paper-plane"></i> Send Message
+      </button>
+    </form>
+  </div>
 </section>
