@@ -15,7 +15,7 @@
         <i class="fas fa-eye"></i>
       </div>
       <div class="stat-card__content">
-        <div class="stat-card__number"><%= stats.total_views.toLocaleString() %></div>
+        <div class="stat-card__number stat-number" data-stat="total_views"><%= stats.total_views %></div>
         <div class="stat-card__label">Total Site Views</div>
       </div>
     </div>
@@ -25,7 +25,7 @@
         <i class="fas fa-paint-brush"></i>
       </div>
       <div class="stat-card__content">
-        <div class="stat-card__number"><%= stats.total_arts %></div>
+        <div class="stat-card__number stat-number" data-stat="total_arts"><%= stats.total_arts %></div>
         <div class="stat-card__label">Listed Artworks</div>
       </div>
     </div>
@@ -35,7 +35,7 @@
         <i class="fas fa-check-circle"></i>
       </div>
       <div class="stat-card__content">
-        <div class="stat-card__number"><%= stats.total_sold %></div>
+        <div class="stat-card__number stat-number" data-stat="total_sold"><%= stats.total_sold %></div>
         <div class="stat-card__label">Arts Sold</div>
       </div>
     </div>
@@ -45,8 +45,48 @@
         <i class="fas fa-users"></i>
       </div>
       <div class="stat-card__content">
-        <div class="stat-card__number"><%= stats.total_artists %></div>
+        <div class="stat-card__number stat-number" data-stat="total_artists"><%= stats.total_artists %></div>
         <div class="stat-card__label">Active Artists</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card__icon">
+        <i class="fas fa-file-alt"></i>
+      </div>
+      <div class="stat-card__content">
+        <div class="stat-card__number stat-number" data-stat="pending_applications"><%= stats.pending_applications %></div>
+        <div class="stat-card__label">Pending Applications</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card__icon">
+        <i class="fas fa-envelope"></i>
+      </div>
+      <div class="stat-card__content">
+        <div class="stat-card__number stat-number" data-stat="unread_messages"><%= stats.unread_messages %></div>
+        <div class="stat-card__label">Unread Messages</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card__icon">
+        <i class="fas fa-shopping-cart"></i>
+      </div>
+      <div class="stat-card__content">
+        <div class="stat-card__number stat-number" data-stat="active_orders"><%= stats.active_orders %></div>
+        <div class="stat-card__label">Active Orders</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card__icon">
+        <i class="fas fa-dollar-sign"></i>
+      </div>
+      <div class="stat-card__content">
+        <div class="stat-card__number stat-number" data-stat="total_revenue">NPR <%= (stats.total_revenue || 0) %></div>
+        <div class="stat-card__label">Total Revenue</div>
       </div>
     </div>
   </div>
@@ -493,6 +533,46 @@
     });
   });
 
+  // Function to format numbers with abbreviations
+  function formatNumber(num) {
+    if (num < 1000) {
+      return num.toString();
+    } else if (num < 1000000) {
+      return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+    } else if (num < 1000000000) {
+      return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'm';
+    } else {
+      return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'b';
+    }
+  }
+
+  // Function to format currency with abbreviations
+  function formatCurrency(num) {
+    const formatted = formatNumber(num);
+    return 'NPR ' + formatted;
+  }
+
+  // Update all stat cards with formatted numbers on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    const statElements = document.querySelectorAll('.stat-card .stat-number');
+    statElements.forEach(element => {
+      const originalText = element.textContent.trim();
+      
+      // Check if it's a currency value
+      if (originalText.includes('NPR')) {
+        const number = parseInt(originalText.replace(/[^\d]/g, ''));
+        if (!isNaN(number)) {
+          element.textContent = formatCurrency(number);
+        }
+      } else {
+        const number = parseInt(originalText.replace(/[^\d]/g, ''));
+        if (!isNaN(number)) {
+          element.textContent = formatNumber(number);
+        }
+      }
+    });
+  });
+
   // Auto-refresh stats every 5 minutes
   setInterval(() => {
     fetch('/admin/api/stats')
@@ -502,7 +582,11 @@
         Object.keys(data).forEach(key => {
           const element = document.querySelector(`[data-stat="${key}"]`);
           if (element) {
-            element.textContent = data[key].toLocaleString();
+            if (key === 'total_revenue') {
+              element.textContent = formatCurrency(data[key]);
+            } else {
+              element.textContent = formatNumber(data[key]);
+            }
           }
         });
       })

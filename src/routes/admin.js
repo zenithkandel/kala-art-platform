@@ -149,6 +149,18 @@ router.post('/logout', requireAuth, async (req, res) => {
   }
 });
 
+// API endpoint for stats refresh
+router.get('/api/stats', requireAuth, async (req, res) => {
+  try {
+    const db = require('../database/service');
+    const stats = await db.getDashboardStats();
+    res.json(stats);
+  } catch (error) {
+    console.error('Error fetching stats:', error);
+    res.status(500).json({ error: 'Failed to fetch stats' });
+  }
+});
+
 // Redirect /admin to appropriate page
 router.get('/', (req, res) => {
   if (req.session.admin && req.session.admin.admin_id) {

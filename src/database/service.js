@@ -391,33 +391,73 @@ class DatabaseService {
       let unread_messages = 0;
       let pending_applications = 0;
       let active_orders = 0;
+      let total_revenue = 0;
+      let total_messages = 0;
+      let total_applications = 0;
+      let approved_applications = 0;
+      let rejected_applications = 0;
       
       if (stats.artists_table_exists > 0) {
-        const artistCount = await queryOne(`SELECT COUNT(*) as count FROM artists WHERE status = 'active' AND deleted_at IS NULL`);
-        total_artists = artistCount ? artistCount.count : 0;
+        try {
+          const artistCount = await queryOne(`SELECT COUNT(*) as count FROM artists WHERE status = 'active' AND deleted_at IS NULL`);
+          total_artists = artistCount ? artistCount.count : 0;
+        } catch (err) {
+          console.log('Artists table exists but query failed, using 0');
+        }
       }
       
       if (stats.arts_table_exists > 0) {
-        const artCount = await queryOne(`SELECT COUNT(*) as count FROM arts WHERE status = 'listed' AND deleted_at IS NULL`);
-        total_arts = artCount ? artCount.count : 0;
+        try {
+          const artCount = await queryOne(`SELECT COUNT(*) as count FROM arts WHERE status = 'listed' AND deleted_at IS NULL`);
+          total_arts = artCount ? artCount.count : 0;
+          
+          const soldCount = await queryOne(`SELECT COUNT(*) as count FROM arts WHERE status = 'sold' AND deleted_at IS NULL`);
+          total_sold = soldCount ? soldCount.count : 0;
+        } catch (err) {
+          console.log('Arts table exists but query failed, using 0');
+        }
       }
       
       if (stats.orders_table_exists > 0) {
-        const soldCount = await queryOne(`SELECT COUNT(*) as count FROM orders WHERE status = 'delivered'`);
-        total_sold = soldCount ? soldCount.count : 0;
-        
-        const activeCount = await queryOne(`SELECT COUNT(*) as count FROM orders WHERE status IN ('received', 'viewed', 'contacted', 'confirmed', 'preparing', 'delivering')`);
-        active_orders = activeCount ? activeCount.count : 0;
+        try {
+          const activeCount = await queryOne(`SELECT COUNT(*) as count FROM orders WHERE status IN ('received', 'viewed', 'contacted', 'confirmed', 'preparing', 'delivering')`);
+          active_orders = activeCount ? activeCount.count : 0;
+          
+          const revenueQuery = await queryOne(`SELECT COALESCE(SUM(total_amount), 0) as total FROM orders WHERE status = 'delivered'`);
+          total_revenue = revenueQuery ? revenueQuery.total : 0;
+        } catch (err) {
+          console.log('Orders table exists but query failed, using 0');
+        }
       }
       
       if (stats.messages_table_exists > 0) {
-        const messageCount = await queryOne(`SELECT COUNT(*) as count FROM contact_messages WHERE status = 'unread'`);
-        unread_messages = messageCount ? messageCount.count : 0;
+        try {
+          const messageCount = await queryOne(`SELECT COUNT(*) as count FROM contact_messages WHERE status = 'unread'`);
+          unread_messages = messageCount ? messageCount.count : 0;
+          
+          const totalMessageCount = await queryOne(`SELECT COUNT(*) as count FROM contact_messages`);
+          total_messages = totalMessageCount ? totalMessageCount.count : 0;
+        } catch (err) {
+          console.log('Messages table exists but query failed, using 0');
+        }
       }
       
       if (stats.applications_table_exists > 0) {
-        const appCount = await queryOne(`SELECT COUNT(*) as count FROM artist_applications WHERE status = 'pending'`);
-        pending_applications = appCount ? appCount.count : 0;
+        try {
+          const appCount = await queryOne(`SELECT COUNT(*) as count FROM artist_applications WHERE status = 'pending'`);
+          pending_applications = appCount ? appCount.count : 0;
+          
+          const totalAppCount = await queryOne(`SELECT COUNT(*) as count FROM artist_applications`);
+          total_applications = totalAppCount ? totalAppCount.count : 0;
+          
+          const approvedCount = await queryOne(`SELECT COUNT(*) as count FROM artist_applications WHERE status = 'approved'`);
+          approved_applications = approvedCount ? approvedCount.count : 0;
+          
+          const rejectedCount = await queryOne(`SELECT COUNT(*) as count FROM artist_applications WHERE status = 'rejected'`);
+          rejected_applications = rejectedCount ? rejectedCount.count : 0;
+        } catch (err) {
+          console.log('Applications table exists but query failed, using 0');
+        }
       }
       
       return {
@@ -427,7 +467,12 @@ class DatabaseService {
         total_views: stats.total_views || 0,
         unread_messages,
         pending_applications,
-        active_orders
+        active_orders,
+        total_revenue,
+        total_messages,
+        total_applications,
+        approved_applications,
+        rejected_applications
       };
     } catch (error) {
       console.error('Error getting dashboard stats:', error);
@@ -438,7 +483,12 @@ class DatabaseService {
         total_views: 0,
         unread_messages: 0,
         pending_applications: 0,
-        active_orders: 0
+        active_orders: 0,
+        total_revenue: 0,
+        total_messages: 0,
+        total_applications: 0,
+        approved_applications: 0,
+        rejected_applications: 0
       };
     }
   }
