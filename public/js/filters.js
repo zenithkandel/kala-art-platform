@@ -7,20 +7,47 @@
   let currentFilter = 'all';
   let currentSort = 'newest';
   
-  // Sample art data (will be replaced with real data from database)
-  let artworks = [
-    { id: 1, title: 'Sunset Dreams', type: 'painting', price: 150, date: '2024-01-15', artist: 'Maya Chen' },
-    { id: 2, title: 'City Sketch', type: 'sketch', price: 75, date: '2024-01-10', artist: 'Raj Patel' },
-    { id: 3, title: 'Portrait Study', type: 'portrait', price: 200, date: '2024-01-20', artist: 'Sofia Rodriguez' },
-    { id: 4, title: 'Digital Landscape', type: 'digital', price: 120, date: '2024-01-25', artist: 'Alex Kim' },
-    { id: 5, title: 'Abstract Forms', type: 'painting', price: 300, date: '2024-01-12', artist: 'Jordan Liu' },
-    { id: 6, title: 'Character Design', type: 'digital', price: 180, date: '2024-01-18', artist: 'Sam Taylor' }
-  ];
+  // Art data will be loaded from server
+  let artworks = [];
   
-  // Initialize filters
+  // Load artworks from server on page load
+  async function loadArtworks() {
+    try {
+      const response = await fetch('/api/artworks');
+      if (response.ok) {
+        artworks = await response.json();
+        renderArtworks();
+      } else {
+        console.error('Failed to load artworks');
+        // Fallback to demo data if API fails
+        artworks = [
+          { id: 1, title: 'Sunset Dreams', type: 'painting', price: 150, date: '2024-01-15', artist: 'Maya Chen' },
+          { id: 2, title: 'City Sketch', type: 'sketch', price: 75, date: '2024-01-10', artist: 'Raj Patel' },
+          { id: 3, title: 'Portrait Study', type: 'portrait', price: 200, date: '2024-01-20', artist: 'Sofia Rodriguez' },
+          { id: 4, title: 'Digital Landscape', type: 'digital', price: 120, date: '2024-01-25', artist: 'Alex Kim' },
+          { id: 5, title: 'Abstract Forms', type: 'painting', price: 300, date: '2024-01-12', artist: 'Jordan Liu' },
+          { id: 6, title: 'Character Design', type: 'digital', price: 180, date: '2024-01-18', artist: 'Sam Taylor' }
+        ];
+        renderArtworks();
+      }
+    } catch (error) {
+      console.error('Error loading artworks:', error);
+      // Use demo data as fallback
+      artworks = [
+        { id: 1, title: 'Sunset Dreams', type: 'painting', price: 150, date: '2024-01-15', artist: 'Maya Chen' },
+        { id: 2, title: 'City Sketch', type: 'sketch', price: 75, date: '2024-01-10', artist: 'Raj Patel' }
+      ];
+      renderArtworks();
+    }
+  }
+  
+  // Initialize filters and load data
   if (filterButtons.length > 0) {
     initializeFilters();
-    renderArtworks();
+    loadArtworks(); // Load real data instead of rendering demo data
+  } else if (artGrid) {
+    // If no filter buttons but artGrid exists, just load artworks
+    loadArtworks();
   }
   
   function initializeFilters() {
@@ -117,27 +144,39 @@
     
     const typeIcon = getTypeIcon(artwork.type);
     
+    // Handle both database format and demo format
+    const title = artwork.title || 'Untitled';
+    const artist = artwork.artist_name || artwork.artist || 'Unknown Artist';
+    const price = artwork.price || 0;
+    const imageUrl = artwork.image_thumb || '/img/placeholder-art.jpg';
+    const artId = artwork.art_id || artwork.id;
+    
     card.innerHTML = `
       <div class="card__image">
-        <img src="/img/placeholder-art.jpg" alt="${artwork.title}" loading="lazy">
+        <img src="${imageUrl}" alt="${title}" loading="lazy" onerror="this.src='/img/placeholder-art.jpg'">
         <div class="card__badge">
           <i class="${typeIcon}"></i>
           <span>${artwork.type}</span>
         </div>
       </div>
       <div class="card__content">
-        <h3>${artwork.title}</h3>
-        <p class="card__artist">by ${artwork.artist}</p>
+        <h3>${title}</h3>
+        <p class="card__artist">by ${artist}</p>
         <div class="card__footer">
-          <span class="card__price">$${artwork.price}</span>
-          <button class="btn btn--sm">
-            <i class="fa-light fa-heart"></i>
+          <span class="card__price">NPR ${price.toLocaleString()}</span>
+          <button class="btn btn--sm" onclick="viewArtwork(${artId})">
+            <i class="fas fa-eye"></i> View
           </button>
         </div>
       </div>
     `;
     
     return card;
+  }
+  
+  // Function to view artwork details
+  function viewArtwork(artId) {
+    window.location.href = `/art/${artId}`;
   }
   
   function getTypeIcon(type) {

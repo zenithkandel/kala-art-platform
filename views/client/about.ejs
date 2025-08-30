@@ -203,8 +203,22 @@
       <i class="fa-duotone fa-messages contact__icon"></i>
       <h2>Get In Touch</h2>
       <p>Have questions, suggestions, or want to collaborate? We'd love to hear from you.</p>
+      
+      <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert--success">
+          <i class="fas fa-check-circle"></i>
+          <%= success %>
+        </div>
+      <% } %>
+      
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert--error">
+          <i class="fas fa-exclamation-circle"></i>
+          <%= error %>
+        </div>
+      <% } %>
     </div>
-    <form class="form" method="post" action="#">
+    <form class="form" method="post" action="/about">
       <div class="form__grid">
         <div class="field">
           <label><i class="fa-light fa-user"></i> Name</label>

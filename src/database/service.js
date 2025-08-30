@@ -6,7 +6,55 @@ class DatabaseService {
   async createArtist(data) {
     const { full_name, avatar_path, specialty, age, bio, contact_email, contact_phone, instagram, slug } = data;
     const result = await query(
-      `INSERT INTO artists (full_name, avatar_path, specialty, age, bio, contact_email, contact_phone, instagram, slug)
+      `INSERT INTO   }
+
+  // ============= HOMEPAGE STATS METHODS =============
+  
+  async getHomepageStats() {
+    try {
+      // Get today's views instead of total views
+      const todayViews = await queryOne(`
+        SELECT COALESCE(total_views, 0) as daily_views 
+        FROM page_views_daily 
+        WHERE view_date = CURDATE()
+      `);
+      
+      // Get other basic stats for homepage
+      let total_arts = 0;
+      let total_sold = 0;
+      let total_artists = 0;
+      
+      try {
+        const artCount = await queryOne(`SELECT COUNT(*) as count FROM arts WHERE status = 'listed' AND deleted_at IS NULL`);
+        total_arts = artCount ? artCount.count : 0;
+        
+        const soldCount = await queryOne(`SELECT COUNT(*) as count FROM arts WHERE status = 'sold' AND deleted_at IS NULL`);
+        total_sold = soldCount ? soldCount.count : 0;
+        
+        const artistCount = await queryOne(`SELECT COUNT(*) as count FROM artists WHERE status = 'active' AND deleted_at IS NULL`);
+        total_artists = artistCount ? artistCount.count : 0;
+      } catch (err) {
+        console.log('Error getting homepage stats, using defaults');
+      }
+      
+      return {
+        daily_views: todayViews ? todayViews.daily_views : 0,
+        total_arts,
+        total_sold,
+        total_artists
+      };
+    } catch (error) {
+      console.error('Error getting homepage stats:', error);
+      return {
+        daily_views: 0,
+        total_arts: 0,
+        total_sold: 0,
+        total_artists: 0
+      };
+    }
+  }
+
+  // ============= ADMIN LOGGING METHODS =============ists (full_name, avatar_path, specialty, age, bio, contact_email, contact_phone, instagram, slug)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [full_name, avatar_path, specialty, age, bio, contact_email, contact_phone, instagram, slug]
     );
@@ -121,9 +169,9 @@ class DatabaseService {
       params.push(filters.artist_id);
     }
     
-    if (filters.type) {
-      sql += ' AND a.type = ?';
-      params.push(filters.type);
+    if (filters.style) {
+      sql += ' AND a.style = ?';
+      params.push(filters.style);
     }
     
     sql += ' ORDER BY a.created_at DESC';
