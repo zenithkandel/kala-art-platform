@@ -10,6 +10,9 @@
   // Art data will be loaded from server
   let artworks = [];
   
+  // Track failed image loads to prevent infinite retries
+  const failedImages = new Set();
+  
   // Load artworks from server on page load
   async function loadArtworks() {
     try {
@@ -148,12 +151,12 @@
     const title = artwork.title || 'Untitled';
     const artist = artwork.artist_name || artwork.artist || 'Unknown Artist';
     const price = artwork.price || 0;
-    const imageUrl = artwork.image_thumb || '/img/placeholder-art.jpg';
+    const imageUrl = artwork.image_thumb || artwork.primary_image;
     const artId = artwork.art_id || artwork.id;
     
     card.innerHTML = `
       <div class="card__image">
-        <img src="${imageUrl}" alt="${title}" loading="lazy" onerror="this.src='/img/placeholder-art.jpg'">
+        <img data-src="${imageUrl}" alt="${title}" loading="lazy">
         <div class="card__badge">
           <i class="${typeIcon}"></i>
           <span>${artwork.type}</span>
@@ -171,7 +174,82 @@
       </div>
     `;
     
+    // Smart image loading to prevent infinite retries
+    const img = card.querySelector('img');
+    loadImageSafely(img, imageUrl);
+    
     return card;
+  }
+  
+  // Smart image loading function that prevents infinite retries
+  function loadImageSafely(imgElement, imageUrl) {
+    // If this image URL has already failed, use placeholder immediately
+    if (failedImages.has(imageUrl)) {
+      imgElement.src = createPlaceholderImage();
+      return;
+    }
+    
+    // If no image URL provided, use placeholder
+    if (!imageUrl || imageUrl.trim() === '') {
+      imgElement.src = createPlaceholderImage();
+      return;
+    }
+    
+    // Try to load the image
+    const testImg = new Image();
+    testImg.onload = function() {
+      // Image loaded successfully
+      imgElement.src = imageUrl;
+    };
+    
+    testImg.onerror = function() {
+      // Mark this URL as failed to prevent future attempts
+      failedImages.add(imageUrl);
+      
+      // Use placeholder image
+      imgElement.src = createPlaceholderImage();
+      
+      console.warn(`Failed to load image: ${imageUrl}`);
+    };
+    
+    // Start loading
+    testImg.src = imageUrl;
+    
+    // Set a timeout to prevent hanging
+    setTimeout(() => {
+      if (!imgElement.src || imgElement.src === '') {
+        failedImages.add(imageUrl);
+        imgElement.src = createPlaceholderImage();
+      }
+    }, 5000); // 5 second timeout
+  }
+  
+  // Create a fallback placeholder using CSS/SVG data URI
+  function createPlaceholderImage() {
+    // First try the static placeholder with correct path
+    const placeholderPath = '/public/img/placeholder-art.jpg';
+    
+    // If placeholder has failed before, create a data URI
+    if (failedImages.has(placeholderPath)) {
+      return createDataURIPlaceholder();
+    }
+    
+    return placeholderPath;
+  }
+  
+  // Create a data URI placeholder that will always work
+  function createDataURIPlaceholder() {
+    const svg = `
+      <svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#f0f0f0"/>
+        <circle cx="150" cy="80" r="20" fill="#ccc"/>
+        <path d="M120 120 L150 100 L180 120 L210 90 L210 180 L90 180 Z" fill="#ddd"/>
+        <text x="150" y="160" text-anchor="middle" fill="#999" font-family="Arial" font-size="12">
+          Artwork Image
+        </text>
+      </svg>
+    `;
+    return `data:image/svg+xml;base64,${btoa(svg)}`;
   }
   
   // Function to view artwork details
