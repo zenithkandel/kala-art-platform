@@ -124,28 +124,31 @@
     initializeArtistImageLoading();
   }
   
-  function createArtistCard(artist) {
+  function createArtistCard(artist, index = 0) {
     const profileImage = artist.profile_picture || '/public/img/placeholder-avatar.png';
     const specialty = artist.specialty || 'Artist';
     const artworkCount = artist.artwork_count || 0;
     const soldCount = artist.sold_count || 0;
-    const bio = artist.bio ? (artist.bio.length > 100 ? artist.bio.substring(0, 100) + '...' : artist.bio) : 'Talented emerging artist';
+    const bio = artist.bio ? 
+      (artist.bio.length > 120 ? artist.bio.substring(0, 120) + '...' : artist.bio) : 
+      `Talented ${specialty.toLowerCase()} exploring creativity and innovation through art.`;
     const age = artist.age ? `, ${artist.age}` : '';
     const instagram = artist.instagram ? `https://instagram.com/${artist.instagram.replace('@', '')}` : null;
     
     return `
-      <div class="artist-card" data-artist-id="${artist.artist_id}">
+      <div class="artist-card" data-artist-id="${artist.artist_id}" style="opacity: 0; transform: translateY(20px); transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);">
         <div class="artist-card__image">
           <img 
             src="/public/img/placeholder-avatar.png" 
-            alt="${artist.full_name}" 
+            alt="Portrait of ${artist.full_name}" 
             data-src="${profileImage}"
             class="artist-image"
             loading="lazy"
           />
           <div class="artist-card__overlay">
-            <button class="btn btn--primary btn--sm" onclick="viewArtistProfile(${artist.artist_id}, '${artist.slug || ''}')">
-              <i class="fas fa-user"></i> View Profile
+            <button class="btn btn--primary btn--sm" onclick="viewArtistProfile(${artist.artist_id}, '${artist.slug || ''}')" aria-label="View ${artist.full_name}'s profile">
+              <i class="fas fa-user"></i> 
+              <span>View Profile</span>
             </button>
           </div>
         </div>
@@ -155,21 +158,21 @@
           <p class="artist-card__bio">${bio}</p>
           <div class="artist-card__stats">
             <div class="artist-stat">
-              <i class="fas fa-palette"></i>
+              <i class="fas fa-palette" aria-hidden="true"></i>
               <span>${artworkCount} artwork${artworkCount !== 1 ? 's' : ''}</span>
             </div>
             <div class="artist-stat">
-              <i class="fas fa-check-circle"></i>
+              <i class="fas fa-check-circle" aria-hidden="true"></i>
               <span>${soldCount} sold</span>
             </div>
           </div>
           <div class="artist-card__links">
             ${instagram ? `
-              <a href="${instagram}" target="_blank" rel="noopener" class="artist-link">
+              <a href="${instagram}" target="_blank" rel="noopener noreferrer" class="artist-link" title="Follow ${artist.full_name} on Instagram" aria-label="Instagram profile">
                 <i class="fab fa-instagram"></i>
               </a>
             ` : ''}
-            <button class="artist-link" onclick="viewArtistProfile(${artist.artist_id}, '${artist.slug || ''}')" title="View Profile">
+            <button class="artist-link" onclick="viewArtistProfile(${artist.artist_id}, '${artist.slug || ''}')" title="View ${artist.full_name}'s portfolio" aria-label="View portfolio">
               <i class="fas fa-arrow-right"></i>
             </button>
           </div>
