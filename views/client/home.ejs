@@ -1,10 +1,10 @@
 <section class="hero">
   <div class="hero__content">
-    <h1><i class="fa-duotone fa-sparkles"></i> Discover Young Artistry</h1>
+    <h1><i class="fas fa-sparkles"></i> Discover Young Artistry</h1>
     <p>A sleek platform to explore and own artworks by talented young artists.</p>
     <div class="hero__cta">
       <a href="#grid" class="btn btn--primary">
-        <i class="fa-light fa-compass"></i> Explore Art
+        <i class="fas fa-compass"></i> Explore Art
       </a>
     </div>
   </div>
@@ -13,23 +13,23 @@
 <section class="stats" aria-label="Site statistics">
   <div class="stats__grid">
     <div class="stat">
-      <i class="fa-duotone fa-eye stat__icon"></i>
-      <span class="stat__num" id="statVisitors">—</span>
+      <i class="fas fa-eye stat__icon"></i>
+      <span class="stat__num" id="statVisitors"><%= stats.total_views || 0 %></span>
       <span class="stat__label">Visitors</span>
     </div>
     <div class="stat">
-      <i class="fa-duotone fa-paintbrush-fine stat__icon"></i>
-      <span class="stat__num" id="statArts">—</span>
+      <i class="fas fa-paint-brush stat__icon"></i>
+      <span class="stat__num" id="statArts"><%= stats.total_arts || 0 %></span>
       <span class="stat__label">Arts</span>
     </div>
     <div class="stat">
-      <i class="fa-duotone fa-badge-check stat__icon"></i>
-      <span class="stat__num" id="statSold">—</span>
+      <i class="fas fa-check-circle stat__icon"></i>
+      <span class="stat__num" id="statSold"><%= stats.total_sold || 0 %></span>
       <span class="stat__label">Sold</span>
     </div>
     <div class="stat">
-      <i class="fa-duotone fa-users-rays stat__icon"></i>
-      <span class="stat__num" id="statArtists">—</span>
+      <i class="fas fa-users stat__icon"></i>
+      <span class="stat__num" id="statArtists"><%= stats.total_artists || 0 %></span>
       <span class="stat__label">Artists</span>
     </div>
   </div>
@@ -39,7 +39,7 @@
   <form class="search__form" role="search">
     <div class="search__input-wrapper">
       <label for="search-input" class="sr-only">Search artworks</label>
-      <i class="fa-light fa-magnifying-glass search__icon" aria-hidden="true"></i>
+      <i class="fas fa-magnifying-glass search__icon" aria-hidden="true"></i>
       <input 
         type="search" 
         id="search-input"
@@ -59,34 +59,34 @@
 
 <section class="grid" id="grid" aria-label="Artworks">
   <div class="grid__header">
-    <h2><i class="fa-light fa-grid-2"></i> Latest Artworks</h2>
+    <h2><i class="fas fa-grid-2"></i> Latest Artworks</h2>
     <div class="grid__filters">
       <button class="btn btn--ghost active" data-filter="all">
-        <i class="fa-light fa-layer-group"></i> All Types
+        <i class="fas fa-layer-group"></i> All Types
       </button>
       <button class="btn btn--ghost" data-filter="sketch">
-        <i class="fa-light fa-pencil"></i> Sketches
+        <i class="fas fa-pencil"></i> Sketches
       </button>
       <button class="btn btn--ghost" data-filter="painting">
-        <i class="fa-light fa-palette"></i> Paintings
+        <i class="fas fa-palette"></i> Paintings
       </button>
       <button class="btn btn--ghost" data-filter="portrait">
-        <i class="fa-light fa-user-tie"></i> Portraits
+        <i class="fas fa-user-tie"></i> Portraits
       </button>
       <button class="btn btn--ghost" data-filter="digital">
-        <i class="fa-light fa-tablet-screen-button"></i> Digital
+        <i class="fas fa-tablet-screen-button"></i> Digital
       </button>
       <button class="btn btn--ghost" data-sort="price-low">
-        <i class="fa-light fa-arrow-up-short-wide"></i> Price: Low to High
+        <i class="fas fa-arrow-up-short-wide"></i> Price: Low to High
       </button>
       <button class="btn btn--ghost" data-sort="price-high">
-        <i class="fa-light fa-arrow-down-wide-short"></i> Price: High to Low
+        <i class="fas fa-arrow-down-wide-short"></i> Price: High to Low
       </button>
     </div>
   </div>
   <div id="artGrid" class="grid__cards"></div>
   <button id="loadMore" class="btn btn--ghost">
-    <i class="fa-light fa-plus"></i> Load more
+    <i class="fas fa-plus"></i> Load more
   </button>
   <div id="observerSentinel" aria-hidden="true"></div>
 </section>
@@ -95,14 +95,14 @@
 <section class="newsletter" aria-label="Newsletter signup">
   <div class="newsletter__content">
     <div class="newsletter__text">
-      <h2><i class="fa-duotone fa-envelope-open-text"></i> Stay Connected</h2>
+      <h2><i class="fas fa-envelope-open-text"></i> Stay Connected</h2>
       <p>Get notified about new artworks, artist spotlights, and exclusive exhibitions.</p>
     </div>
     <form class="newsletter__form">
       <div class="newsletter__input-group">
         <input type="email" placeholder="Enter your email" class="newsletter__input" required>
         <button type="submit" class="btn btn--primary newsletter__btn">
-          <i class="fa-light fa-paper-plane"></i> Subscribe
+          <i class="fas fa-paper-plane"></i> Subscribe
         </button>
       </div>
     </form>
@@ -114,21 +114,21 @@
   <div class="featured-stats__grid">
     <div class="featured-stat">
       <div class="featured-stat__icon">
-        <i class="fa-duotone fa-trophy"></i>
+        <i class="fas fa-trophy"></i>
       </div>
       <h3>Award Winning</h3>
       <p>Showcasing the finest young talent in contemporary art</p>
     </div>
     <div class="featured-stat">
       <div class="featured-stat__icon">
-        <i class="fa-duotone fa-rocket"></i>
+        <i class="fas fa-rocket"></i>
       </div>
       <h3>Growing Community</h3>
       <p>Join thousands of art enthusiasts and emerging artists</p>
     </div>
     <div class="featured-stat">
       <div class="featured-stat__icon">
-        <i class="fa-duotone fa-heart"></i>
+        <i class="fas fa-heart"></i>
       </div>
       <h3>Passion Driven</h3>
       <p>Supporting artists' dreams and connecting them with collectors</p>
@@ -139,14 +139,14 @@
 <!-- CTA Section -->
 <section class="cta-section" aria-label="Call to action">
   <div class="cta-content">
-    <h2><i class="fa-duotone fa-stars"></i> Ready to Start Your Art Journey?</h2>
+    <h2><i class="fas fa-stars"></i> Ready to Start Your Art Journey?</h2>
     <p>Discover unique pieces, support young artists, and build your collection today.</p>
     <div class="cta-buttons">
       <a href="#grid" class="btn btn--primary">
-        <i class="fa-light fa-compass"></i> Browse Gallery
+        <i class="fas fa-compass"></i> Browse Gallery
       </a>
       <a href="/register" class="btn btn--ghost">
-        <i class="fa-light fa-user-plus"></i> Become an Artist
+        <i class="fas fa-user-plus"></i> Become an Artist
       </a>
     </div>
   </div>

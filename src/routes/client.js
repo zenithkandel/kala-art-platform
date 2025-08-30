@@ -4,8 +4,29 @@ const dbService = require('../database/service');
 
 // In this initial client scaffold, we'll render EJS pages. Data will be wired later.
 
-router.get('/', (req, res) => {
-  res.render('client/home', { title: 'Home' });
+router.get('/', async (req, res) => {
+  try {
+    // Get dashboard statistics for homepage
+    const stats = await dbService.getDashboardStats();
+    
+    res.render('client/home', { 
+      title: 'Home',
+      stats: stats
+    });
+  } catch (error) {
+    console.error('Error loading homepage stats:', error);
+    
+    // Render with default stats if there's an error
+    res.render('client/home', { 
+      title: 'Home',
+      stats: {
+        total_views: 0,
+        total_arts: 0,
+        total_sold: 0,
+        total_artists: 0
+      }
+    });
+  }
 });
 
 router.get('/about', (req, res) => {
