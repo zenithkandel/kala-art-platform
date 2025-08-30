@@ -1,0 +1,317 @@
+<!-- Admin Login Page -->
+<div class="auth-container">            <button type="button" class="password-toggle" onclick="togglePassword()">
+              <i class="fas fa-eye" id="passwordToggleIcon"></i>
+            </button> <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-logo">
+        <i class="fas fa-shield-alt"></i>
+        <h1>कला Admin</h1>
+      </div>
+      <p class="auth-subtitle">Secure admin access to the art platform</p>
+    </div>
+
+      <% if (error) { %>
+        <div class="alert alert--error">
+          <i class="fas fa-exclamation-circle"></i>
+          <%= error %>
+        </div>
+      <% } %>
+
+      <% if (success) { %>
+        <div class="alert alert--success">
+          <i class="fas fa-check-circle"></i>
+          <%= success %>
+        </div>
+      <% } %>    <form class="auth-form" method="post" action="/admin/login" id="loginForm">
+      <div class="field">
+        <label for="username">
+          <i class="fas fa-user"></i>
+          Username
+        </label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username" 
+          required 
+          autocomplete="username"
+          placeholder="Enter your username"
+          maxlength="100"
+        >
+      </div>
+
+      <div class="field">
+        <label for="password">
+          <i class="fas fa-lock"></i>
+          Password
+        </label>
+        <div class="password-input">
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            required 
+            autocomplete="current-password"
+            placeholder="Enter your password"
+            minlength="6"
+          >
+          <button type="button" class="password-toggle" onclick="togglePassword()">
+            <i class="fa-light fa-eye" id="passwordToggleIcon"></i>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn--primary btn--large auth-submit">
+        <i class="fas fa-sign-in-alt"></i>
+        Sign In
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p class="auth-note">
+        <i class="fas fa-shield-alt"></i>
+        Secure admin access protected by encryption
+      </p>
+      <a href="/" class="auth-link">
+        <i class="fas fa-arrow-left"></i>
+        Back to Main Site
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Auth-specific styles */
+  .auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, var(--bg) 0%, rgba(124, 92, 255, 0.05) 100%);
+  }
+
+  .auth-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 3rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: var(--shadow-xl);
+    border: 1px solid rgba(124, 92, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+  }
+
+  .auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .auth-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .auth-logo i {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .auth-logo h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text);
+    margin: 0;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .auth-subtitle {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .password-input {
+    position: relative;
+  }
+
+  .password-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: color 0.2s ease;
+  }
+
+  .password-toggle:hover {
+    color: var(--primary);
+  }
+
+  .auth-submit {
+    margin-top: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .auth-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(124, 92, 255, 0.3);
+  }
+
+  .auth-footer {
+    margin-top: 2rem;
+    text-align: center;
+  }
+
+  .auth-note {
+    font-size: 0.875rem;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .auth-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .auth-link:hover {
+    color: var(--accent);
+    transform: translateX(-3px);
+  }
+
+  /* Alert styles */
+  .alert {
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .alert--error {
+    background: rgba(255, 92, 128, 0.1);
+    border: 1px solid rgba(255, 92, 128, 0.2);
+    color: #ff5c80;
+  }
+
+  .alert--success {
+    background: rgba(36, 195, 137, 0.1);
+    border: 1px solid rgba(36, 195, 137, 0.2);
+    color: #24c389;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .auth-container {
+      padding: 1rem;
+    }
+    
+    .auth-card {
+      padding: 2rem 1.5rem;
+    }
+    
+    .auth-logo h1 {
+      font-size: 1.75rem;
+    }
+  }
+
+  /* Loading state */
+  .auth-form.loading .auth-submit {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .auth-form.loading .auth-submit::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+</style>
+
+<script>
+  // Toggle password visibility
+  function togglePassword() {
+    const passwordInput = document.getElementById('password');
+    const toggleIcon = document.getElementById('passwordToggleIcon');
+    
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      toggleIcon.className = 'fas fa-eye-slash';
+    } else {
+      passwordInput.type = 'password';
+      toggleIcon.className = 'fas fa-eye';
+    }
+  }
+
+  // Form handling
+  document.getElementById('loginForm').addEventListener('submit', function() {
+    this.classList.add('loading');
+  });
+
+  // Focus first input
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('username').focus();
+  });
+
+  // Remove loading state if there's an error
+  window.addEventListener('load', function() {
+    const form = document.getElementById('loginForm');
+    if (form.classList.contains('loading')) {
+      form.classList.remove('loading');
+    }
+  });
+</script>

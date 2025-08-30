@@ -1,6 +1,6 @@
 -- Create and use the database
-CREATE DATABASE IF NOT EXISTS `kala-art-platform`;
-USE `kala-art-platform`;
+CREATE DATABASE IF NOT EXISTS `kala_art_platform`;
+USE `kala_art_platform`;
 
 -- kalaa (art) platform schema
 -- Note: Uses simple MySQL tables (InnoDB) suitable for mysql2 + prepared statements.

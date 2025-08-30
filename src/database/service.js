@@ -313,6 +313,86 @@ class DatabaseService {
       [viewDate]
     );
   }
+
+  // ============= ADMIN METHODS =============
+  
+  async getAdminByUsername(username) {
+    return await queryOne(
+      'SELECT * FROM admins WHERE username = ? AND is_active = 1',
+      [username]
+    );
+  }
+  
+  async getAdminById(adminId) {
+    return await queryOne(
+      'SELECT * FROM admins WHERE admin_id = ? AND is_active = 1',
+      [adminId]
+    );
+  }
+  
+  async updateAdminLastLogin(adminId) {
+    await query(
+      'UPDATE admins SET last_login = CURRENT_TIMESTAMP WHERE admin_id = ?',
+      [adminId]
+    );
+  }
+  
+  async getDashboardStats() {
+    try {
+      // Get platform statistics
+      const stats = await queryOne(`
+        SELECT 
+          (SELECT COUNT(*) FROM artists WHERE status = 'active' AND deleted_at IS NULL) as total_artists,
+          (SELECT COUNT(*) FROM arts WHERE status = 'listed' AND deleted_at IS NULL) as total_arts,
+          (SELECT COUNT(*) FROM orders WHERE status = 'delivered') as total_sold,
+          (SELECT COALESCE(SUM(total_views), 0) FROM page_views_daily) as total_views,
+          (SELECT COUNT(*) FROM contact_messages WHERE status = 'unread') as unread_messages,
+          (SELECT COUNT(*) FROM artist_applications WHERE status = 'pending') as pending_applications,
+          (SELECT COUNT(*) FROM orders WHERE status IN ('received', 'viewed', 'contacted', 'confirmed', 'preparing', 'delivering')) as active_orders
+      `);
+      
+      return stats || {
+        total_artists: 0,
+        total_arts: 0,
+        total_sold: 0,
+        total_views: 0,
+        unread_messages: 0,
+        pending_applications: 0,
+        active_orders: 0
+      };
+    } catch (error) {
+      console.error('Error getting dashboard stats:', error);
+      return {
+        total_artists: 0,
+        total_arts: 0,
+        total_sold: 0,
+        total_views: 0,
+        unread_messages: 0,
+        pending_applications: 0,
+        active_orders: 0
+      };
+    }
+  }
+  
+  async logAdminActivity(adminId, action, details = {}) {
+    try {
+      await query(
+        `INSERT INTO admin_activity_log (admin_id, action, table_name, record_id, new_values, ip_address, user_agent)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [
+          adminId,
+          action,
+          details.table_name || null,
+          details.record_id || null,
+          details.new_values ? JSON.stringify(details.new_values) : null,
+          details.ip_address || null,
+          details.user_agent || null
+        ]
+      );
+    } catch (error) {
+      console.error('Error logging admin activity:', error);
+    }
+  }
 }
 
 module.exports = new DatabaseService();

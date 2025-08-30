@@ -17,7 +17,7 @@ async function initializeDatabase() {
     });
     
     // Create database if it doesn't exist
-    const dbName = process.env.DB_NAME || 'kala-art-platform';
+    const dbName = process.env.DB_NAME || 'kala_art_platform';
     console.log(`📦 Creating database: ${dbName}`);
     
     await connection.execute(`CREATE DATABASE IF NOT EXISTS \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);

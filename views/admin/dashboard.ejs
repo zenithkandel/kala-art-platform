@@ -1,0 +1,511 @@
+<!-- Admin Dashboard -->
+<div class="dashboard">
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">
+      <i class="fas fa-chart-line"></i>
+      Dashboard Overview
+    </h1>
+    <p class="dashboard-subtitle">Welcome back, <%= admin.full_name %>! Here's what's happening on कला.</p>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-card__icon">
+        <i class="fas fa-eye"></i>
+      </div>
+      <div class="stat-card__content">
+        <div class="stat-card__number"><%= stats.total_views.toLocaleString() %></div>
+        <div class="stat-card__label">Total Site Views</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card__icon">
+        <i class="fas fa-paint-brush"></i>
+      </div>
+      <div class="stat-card__content">
+        <div class="stat-card__number"><%= stats.total_arts %></div>
+        <div class="stat-card__label">Listed Artworks</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card__icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="stat-card__content">
+        <div class="stat-card__number"><%= stats.total_sold %></div>
+        <div class="stat-card__label">Arts Sold</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card__icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="stat-card__content">
+        <div class="stat-card__number"><%= stats.total_artists %></div>
+        <div class="stat-card__label">Active Artists</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Cards -->
+  <div class="action-grid">
+    <!-- Pending Applications -->
+    <div class="action-card <% if (stats.pending_applications > 0) { %>action-card--highlight<% } %>">
+      <div class="action-card__header">
+        <h3>
+          <i class="fas fa-user-plus"></i>
+          Artist Applications
+        </h3>
+        <% if (stats.pending_applications > 0) { %>
+          <span class="badge badge--warning"><%= stats.pending_applications %></span>
+        <% } %>
+      </div>
+      <p>Review and approve new artist registration requests.</p>
+      <a href="/admin/applications" class="btn btn--primary">
+        <i class="fas fa-arrow-right"></i>
+        View Applications
+      </a>
+    </div>
+
+    <!-- Active Orders -->
+    <div class="action-card <% if (stats.active_orders > 0) { %>action-card--highlight<% } %>">
+      <div class="action-card__header">
+        <h3>
+          <i class="fas fa-shopping-cart"></i>
+          Active Orders
+        </h3>
+        <% if (stats.active_orders > 0) { %>
+          <span class="badge badge--info"><%= stats.active_orders %></span>
+        <% } %>
+      </div>
+      <p>Manage ongoing purchase requests and order fulfillment.</p>
+      <a href="/admin/orders" class="btn btn--primary">
+        <i class="fas fa-arrow-right"></i>
+        Manage Orders
+      </a>
+    </div>
+
+    <!-- Contact Messages -->
+    <div class="action-card <% if (stats.unread_messages > 0) { %>action-card--highlight<% } %>">
+      <div class="action-card__header">
+        <h3>
+          <i class="fas fa-messages"></i>
+          Contact Messages
+        </h3>
+        <% if (stats.unread_messages > 0) { %>
+          <span class="badge badge--danger"><%= stats.unread_messages %></span>
+        <% } %>
+      </div>
+      <p>Respond to customer inquiries and support requests.</p>
+      <a href="/admin/messages" class="btn btn--primary">
+        <i class="fas fa-arrow-right"></i>
+        View Messages
+      </a>
+    </div>
+
+    <!-- Upload New Art -->
+    <div class="action-card">
+      <div class="action-card__header">
+        <h3>
+          <i class="fas fa-cloud-arrow-up"></i>
+          Upload Artwork
+        </h3>
+      </div>
+      <p>Add new artworks from registered artists to the platform.</p>
+      <a href="/admin/arts/upload" class="btn btn--primary">
+        <i class="fas fa-arrow-right"></i>
+        Upload Art
+      </a>
+    </div>
+
+    <!-- Manage Artists -->
+    <div class="action-card">
+      <div class="action-card__header">
+        <h3>
+          <i class="fas fa-palette"></i>
+          Manage Artists
+        </h3>
+      </div>
+      <p>View, edit, and manage all registered artists on the platform.</p>
+      <a href="/admin/artists" class="btn btn--primary">
+        <i class="fas fa-arrow-right"></i>
+        View Artists
+      </a>
+    </div>
+
+    <!-- Manage Artworks -->
+    <div class="action-card">
+      <div class="action-card__header">
+        <h3>
+          <i class="fas fa-images"></i>
+          Manage Artworks
+        </h3>
+      </div>
+      <p>Edit artwork details, pricing, and availability status.</p>
+      <a href="/admin/arts" class="btn btn--primary">
+        <i class="fas fa-arrow-right"></i>
+        View Artworks
+      </a>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <h2 class="section-title">
+      <i class="fas fa-bolt"></i>
+      Quick Actions
+    </h2>
+    <div class="quick-actions__grid">
+      <button class="quick-action" onclick="refreshStats()">
+        <i class="fas fa-arrows-rotate"></i>
+        <span>Refresh Stats</span>
+      </button>
+      <a href="/admin/settings" class="quick-action">
+        <i class="fas fa-cog"></i>
+        <span>Settings</span>
+      </a>
+      <a href="/admin/logs" class="quick-action">
+        <i class="fas fa-list-timeline"></i>
+        <span>Activity Logs</span>
+      </a>
+      <a href="/" target="_blank" class="quick-action">
+        <i class="fas fa-external-link"></i>
+        <span>View Site</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Dashboard Styles */
+  .dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .dashboard-header {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .dashboard-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text);
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .dashboard-title i {
+    color: var(--primary);
+  }
+
+  .dashboard-subtitle {
+    color: var(--muted);
+    font-size: 1.1rem;
+    margin: 0;
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    border: 1px solid rgba(124, 92, 255, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-primary);
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+    border-color: rgba(124, 92, 255, 0.3);
+  }
+
+  .stat-card__icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(124, 92, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+
+  .stat-card__number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-card__label {
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  /* Action Grid */
+  .action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .action-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 2rem;
+    border: 1px solid rgba(124, 92, 255, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .action-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+    border-color: rgba(124, 92, 255, 0.3);
+  }
+
+  .action-card--highlight {
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(124, 92, 255, 0.2);
+  }
+
+  .action-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .action-card__header h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .action-card__header i {
+    color: var(--primary);
+  }
+
+  .action-card p {
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+  }
+
+  .badge--warning {
+    background: #f59e0b;
+  }
+
+  .badge--info {
+    background: #3b82f6;
+  }
+
+  .badge--danger {
+    background: #ef4444;
+  }
+
+  /* Quick Actions */
+  .quick-actions {
+    margin-top: 3rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-title i {
+    color: var(--primary);
+  }
+
+  .quick-actions__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .quick-action {
+    background: var(--surface);
+    border: 1px solid rgba(124, 92, 255, 0.1);
+    border-radius: var(--radius);
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .quick-action:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow);
+    color: var(--primary);
+  }
+
+  .quick-action i {
+    font-size: 1.5rem;
+    color: var(--primary);
+  }
+
+  .quick-action span {
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .dashboard-title {
+      font-size: 2rem;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .action-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .stat-card {
+      padding: 1.5rem;
+    }
+
+    .action-card {
+      padding: 1.5rem;
+    }
+
+    .quick-actions__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .dashboard-title {
+      font-size: 1.75rem;
+    }
+
+    .stat-card__number {
+      font-size: 2rem;
+    }
+
+    .quick-actions__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // Refresh stats functionality
+  function refreshStats() {
+    const button = event.target.closest('.quick-action');
+    const icon = button.querySelector('i');
+    
+    // Add loading state
+    button.style.pointerEvents = 'none';
+    icon.style.animation = 'spin 1s linear infinite';
+    
+    // Simulate refresh (you can make an actual API call here)
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  }
+
+  // Add entrance animations
+  document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.stat-card, .action-card');
+    cards.forEach((card, index) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
+      
+      setTimeout(() => {
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, index * 100);
+    });
+  });
+
+  // Auto-refresh stats every 5 minutes
+  setInterval(() => {
+    fetch('/admin/api/stats')
+      .then(response => response.json())
+      .then(data => {
+        // Update stat numbers without full page reload
+        Object.keys(data).forEach(key => {
+          const element = document.querySelector(`[data-stat="${key}"]`);
+          if (element) {
+            element.textContent = data[key].toLocaleString();
+          }
+        });
+      })
+      .catch(error => console.error('Error refreshing stats:', error));
+  }, 5 * 60 * 1000);
+</script>

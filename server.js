@@ -71,9 +71,13 @@ app.use(async (req, res, next) => {
 
 // Routes
 const clientRoutes = require('./src/routes/client');
+const adminRoutes = require('./src/routes/admin');
 
 // Use main layout for client routes
 app.use('/', clientRoutes);
+
+// Use admin layout for admin routes
+app.use('/admin', adminRoutes);
 
 // 404 handler
 app.use((req, res) => {
