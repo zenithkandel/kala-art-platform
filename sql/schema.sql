@@ -5,7 +5,6 @@ USE `kala-art-platform`;
 -- kalaa (art) platform schema
 -- Note: Uses simple MySQL tables (InnoDB) suitable for mysql2 + prepared statements.
 -- This schema supports:
--- - Admin login and management
 -- - Artists + applications
 -- - Arts (sellable artworks) with multiple images (original, watermarked, thumbnail)
 -- - Orders with order_items for cart or single-art checkout
@@ -19,18 +18,6 @@ USE `kala-art-platform`;
 -- - Minimal constraints; enforce additional business rules at the app layer
 
 -- Ensure proper engine and charset per table
-
--- =========================================================
---  TABLE: admins
--- =========================================================
-CREATE TABLE IF NOT EXISTS admins (
-    admin_id       INT AUTO_INCREMENT PRIMARY KEY,
-    username       VARCHAR(100) NOT NULL UNIQUE,
-    -- Optionally add email later if needed
-    password_hash  VARCHAR(255) NOT NULL,
-    last_login_at  TIMESTAMP NULL,
-    created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =========================================================
 --  TABLE: artists
@@ -201,13 +188,5 @@ CREATE TABLE IF NOT EXISTS page_views_daily (
 --        o.total_amount, o.created_at AS ordered_at, o.updated_at AS delivered_at
 -- FROM orders o
 -- WHERE o.status = 'delivered' AND o.deleted_at IS NULL;
-
--- =========================================================
---  INSERT DEFAULT ADMIN USER
--- =========================================================
--- Default admin user (username: admin, password: admin123)
--- Password hash generated with bcrypt for 'admin123'
-INSERT INTO admins (username, password_hash) VALUES 
-('admin', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
 
 -- End of schema

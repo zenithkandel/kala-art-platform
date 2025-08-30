@@ -239,46 +239,6 @@ class DatabaseService {
   
   // ============= ANALYTICS METHODS =============
   
-  async getDashboardStats() {
-    const stats = {};
-    
-    // Total artists
-    const artistCount = await queryOne('SELECT COUNT(*) as count FROM artists WHERE deleted_at IS NULL');
-    stats.totalArtists = artistCount.count;
-    
-    // Approved artists
-    const approvedArtistCount = await queryOne('SELECT COUNT(*) as count FROM artists WHERE deleted_at IS NULL AND status = ?', ['active']);
-    stats.approvedArtists = approvedArtistCount.count;
-    
-    // Total arts
-    const artCount = await queryOne('SELECT COUNT(*) as count FROM arts WHERE deleted_at IS NULL');
-    stats.totalArts = artCount.count;
-    
-    // Total orders
-    const orderCount = await queryOne('SELECT COUNT(*) as count FROM orders WHERE deleted_at IS NULL');
-    stats.totalOrders = orderCount.count;
-    
-    // Pending applications
-    const pendingApps = await queryOne('SELECT COUNT(*) as count FROM artist_applications WHERE status = ?', ['pending']);
-    stats.pendingApplications = pendingApps.count;
-    
-    // Recent applications
-    stats.recentApplications = await query(
-      'SELECT application_id, full_name, contact_email, age, location, status, submitted_at FROM artist_applications ORDER BY submitted_at DESC LIMIT 5'
-    );
-    
-    // Recent orders
-    stats.recentOrders = await query(
-      'SELECT order_id, order_code, buyer_name, total_amount, status, created_at FROM orders WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 5'
-    );
-    
-    // Total page views
-    const totalViews = await queryOne('SELECT SUM(views) as total FROM page_views_daily');
-    stats.totalViews = totalViews.total || 0;
-    
-    return stats;
-  }
-  
   async getAllOrders() {
     return await query(`
       SELECT 

@@ -10,7 +10,6 @@ const ejsLayouts = require('express-ejs-layouts');
 
 // Import database and middleware
 const { testConnection } = require('./src/database/connection');
-const { addAdminToLocals } = require('./src/middleware/auth');
 const dbService = require('./src/database/service');
 
 const app = express();
@@ -28,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Sessions (for cart and admin auth)
+// Sessions (for cart functionality)
 app.use(session({
   secret: process.env.SESSION_SECRET || 'kala-art-platform-secret-key-change-in-production',
   resave: false,
@@ -49,9 +48,6 @@ app.set('view engine', 'ejs');
 app.use(ejsLayouts);
 app.set('layout', 'layouts/main');
 
-// Add admin user to locals for all routes
-app.use(addAdminToLocals);
-
 // Expose common locals
 app.use((req, res, next) => {
   res.locals.appName = 'कला';
@@ -62,7 +58,7 @@ app.use((req, res, next) => {
 // Page view tracking middleware
 app.use(async (req, res, next) => {
   // Only track page views for GET requests to main pages
-  if (req.method === 'GET' && !req.path.startsWith('/public') && !req.path.startsWith('/admin/api')) {
+  if (req.method === 'GET' && !req.path.startsWith('/public')) {
     try {
       await dbService.recordPageView();
     } catch (error) {
@@ -75,28 +71,13 @@ app.use(async (req, res, next) => {
 
 // Routes
 const clientRoutes = require('./src/routes/client');
-const adminRoutes = require('./src/routes/admin');
 
 // Use main layout for client routes
 app.use('/', clientRoutes);
 
-// Disable layouts for admin routes
-app.use('/admin', (req, res, next) => {
-  res.locals.layout = false;
-  next();
-}, adminRoutes);
-
 // 404 handler
 app.use((req, res) => {
-  if (req.path.startsWith('/admin')) {
-    res.status(404).render('admin/error', {
-      title: '404 - Page Not Found',
-      message: 'Admin page not found',
-      layout: false
-    });
-  } else {
-    res.status(404).render('misc/404', { title: 'Not Found' });
-  }
+  res.status(404).render('misc/404', { title: 'Not Found' });
 });
 
 // Error handler
@@ -107,18 +88,10 @@ app.use((err, req, res, next) => {
     ? 'Something went wrong!' 
     : err.message;
   
-  if (req.path.startsWith('/admin')) {
-    res.status(500).render('admin/error', {
-      title: '500 - Server Error',
-      message,
-      layout: false // No layout for admin error page
-    });
-  } else {
-    res.status(500).render('misc/error', {
-      title: '500 - Server Error',
-      message
-    });
-  }
+  res.status(500).render('misc/error', {
+    title: '500 - Server Error',
+    message
+  });
 });
 
 // Graceful shutdown
