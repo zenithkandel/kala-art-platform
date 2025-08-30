@@ -1598,22 +1598,22 @@ main { flex: 1; width: min(1100px, 100%); margin: 0 auto; padding: 16px; }
 
 .values h2 {
   text-align: center;
-  font-size: 3rem;
-  font-weight: 700;
-  margin-bottom: 3rem;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 2.5rem;
   color: var(--text);
 }
 
 .values__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
 }
 
 .value-card {
   background: var(--surface);
   border-radius: var(--radius);
-  padding: 2.5rem;
+  padding: 2rem;
   border: 1px solid color-mix(in oklab, var(--primary) 15%, transparent);
   transition: all 0.3s var(--easing-smooth);
   text-align: center;
@@ -1633,9 +1633,9 @@ main { flex: 1; width: min(1100px, 100%); margin: 0 auto; padding: 16px; }
 }
 
 .value-card__header i {
-  font-size: 3rem;
+  font-size: 2.2rem;
   color: var(--primary);
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
   transition: all 0.3s var(--easing-smooth);
 }
 
@@ -1645,7 +1645,7 @@ main { flex: 1; width: min(1100px, 100%); margin: 0 auto; padding: 16px; }
 }
 
 .value-card h3 {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: 600;
   color: var(--text);
   margin: 0;
@@ -1653,8 +1653,8 @@ main { flex: 1; width: min(1100px, 100%); margin: 0 auto; padding: 16px; }
 
 .value-card p {
   color: var(--muted);
-  line-height: 1.6;
-  font-size: 1rem;
+  line-height: 1.5;
+  font-size: 0.95rem;
 }
 
 /* Mobile Responsive for About Page */
@@ -1662,54 +1662,58 @@ main { flex: 1; width: min(1100px, 100%); margin: 0 auto; padding: 16px; }
   .about-hero__content {
     grid-template-columns: 1fr;
     text-align: center;
-    gap: 2rem;
+    gap: 1.5rem;
   }
   
   .about-hero__text h1 {
-    font-size: 2.5rem;
-  }
-  
-  .about-hero__subtitle {
-    font-size: 1.2rem;
-  }
-  
-  .about-hero__card {
-    width: 150px;
-    height: 150px;
     font-size: 2rem;
   }
   
-  .about-hero__card span {
+  .about-hero__subtitle {
     font-size: 1rem;
+  }
+  
+  .about-hero__card {
+    width: 100px;
+    height: 100px;
+    font-size: 1.5rem;
+  }
+  
+  .about-hero__card span {
+    font-size: 0.8rem;
   }
   
   .mission__content h2,
   .about-features h2,
   .about-stats h2,
   .values h2 {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
   
   .about-features__grid {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 1.2rem;
   }
   
   .about-feature-card {
-    padding: 2rem;
+    padding: 1.5rem;
   }
   
   .about-stats__grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+    gap: 1.2rem;
   }
   
   .about-stat-card__number {
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
   
   .values__grid {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 1.2rem;
+  }
+  
+  .value-card {
+    padding: 1.5rem;
   }
 }
