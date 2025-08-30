@@ -451,6 +451,21 @@ main { flex: 1; width: min(1100px, 100%); margin: 0 auto; padding: 16px; }
 
 /* =============== MODERN ARTISTS PAGE =============== */
 
+/* Artists Page Background - Multiple targeting approaches */
+body.artists-page {
+  background-color: red !important;
+}
+
+.artists-hero {
+  background: red !important;
+}
+
+/* Test if CSS is loading at all */
+.artists-hero__title {
+  color: red !important;
+  font-size: 100px !important;
+}
+
 /* Artists Hero Section */
 .artists-hero {
   background: linear-gradient(135deg, 
