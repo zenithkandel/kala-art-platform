@@ -306,12 +306,41 @@ class DatabaseService {
     }
   }
   
-  async recordPageView(date = null) {
-    const viewDate = date || new Date().toISOString().split('T')[0];
-    await query(
-      'INSERT INTO page_views_daily (view_date, views) VALUES (?, 1) ON DUPLICATE KEY UPDATE views = views + 1',
-      [viewDate]
-    );
+  async recordPageView(pageType = 'home', pageId = null, userAgent = null, ipAddress = null, sessionId = null) {
+    try {
+      const viewDate = new Date().toISOString().split('T')[0];
+      
+      // Record individual page view
+      await query(
+        `INSERT INTO page_views (page_type, page_id, view_date, ip_address, user_agent, session_id) 
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [pageType, pageId, viewDate, ipAddress, userAgent, sessionId]
+      );
+      
+      // Update daily aggregated stats
+      await query(
+        `INSERT INTO page_views_daily (view_date, total_views, home_views, art_views, artist_views) 
+         VALUES (?, 1, ?, ?, ?) 
+         ON DUPLICATE KEY UPDATE 
+         total_views = total_views + 1,
+         home_views = home_views + ?,
+         art_views = art_views + ?,
+         artist_views = artist_views + ?`,
+        [
+          viewDate,
+          pageType === 'home' ? 1 : 0,
+          pageType === 'art_detail' ? 1 : 0,
+          pageType === 'artist_profile' ? 1 : 0,
+          pageType === 'home' ? 1 : 0,
+          pageType === 'art_detail' ? 1 : 0,
+          pageType === 'artist_profile' ? 1 : 0
+        ]
+      );
+      
+      console.log(`📊 Page view recorded: ${pageType} (${pageId || 'N/A'})`);
+    } catch (error) {
+      console.error('Page view tracking error:', error);
+    }
   }
 
   // ============= ADMIN METHODS =============
@@ -339,26 +368,66 @@ class DatabaseService {
   
   async getDashboardStats() {
     try {
-      // Get platform statistics
+      // Get platform statistics with fallback for missing tables
       const stats = await queryOne(`
         SELECT 
-          (SELECT COUNT(*) FROM artists WHERE status = 'active' AND deleted_at IS NULL) as total_artists,
-          (SELECT COUNT(*) FROM arts WHERE status = 'listed' AND deleted_at IS NULL) as total_arts,
-          (SELECT COUNT(*) FROM orders WHERE status = 'delivered') as total_sold,
+          (SELECT COALESCE(COUNT(*), 0) FROM information_schema.tables 
+           WHERE table_schema = DATABASE() AND table_name = 'artists') as artists_table_exists,
+          (SELECT COALESCE(COUNT(*), 0) FROM information_schema.tables 
+           WHERE table_schema = DATABASE() AND table_name = 'arts') as arts_table_exists,
+          (SELECT COALESCE(COUNT(*), 0) FROM information_schema.tables 
+           WHERE table_schema = DATABASE() AND table_name = 'orders') as orders_table_exists,
           (SELECT COALESCE(SUM(total_views), 0) FROM page_views_daily) as total_views,
-          (SELECT COUNT(*) FROM contact_messages WHERE status = 'unread') as unread_messages,
-          (SELECT COUNT(*) FROM artist_applications WHERE status = 'pending') as pending_applications,
-          (SELECT COUNT(*) FROM orders WHERE status IN ('received', 'viewed', 'contacted', 'confirmed', 'preparing', 'delivering')) as active_orders
+          (SELECT COALESCE(COUNT(*), 0) FROM information_schema.tables 
+           WHERE table_schema = DATABASE() AND table_name = 'contact_messages') as messages_table_exists,
+          (SELECT COALESCE(COUNT(*), 0) FROM information_schema.tables 
+           WHERE table_schema = DATABASE() AND table_name = 'artist_applications') as applications_table_exists
       `);
       
-      return stats || {
-        total_artists: 0,
-        total_arts: 0,
-        total_sold: 0,
-        total_views: 0,
-        unread_messages: 0,
-        pending_applications: 0,
-        active_orders: 0
+      // Get actual counts only if tables exist
+      let total_artists = 0;
+      let total_arts = 0;
+      let total_sold = 0;
+      let unread_messages = 0;
+      let pending_applications = 0;
+      let active_orders = 0;
+      
+      if (stats.artists_table_exists > 0) {
+        const artistCount = await queryOne(`SELECT COUNT(*) as count FROM artists WHERE status = 'active' AND deleted_at IS NULL`);
+        total_artists = artistCount ? artistCount.count : 0;
+      }
+      
+      if (stats.arts_table_exists > 0) {
+        const artCount = await queryOne(`SELECT COUNT(*) as count FROM arts WHERE status = 'listed' AND deleted_at IS NULL`);
+        total_arts = artCount ? artCount.count : 0;
+      }
+      
+      if (stats.orders_table_exists > 0) {
+        const soldCount = await queryOne(`SELECT COUNT(*) as count FROM orders WHERE status = 'delivered'`);
+        total_sold = soldCount ? soldCount.count : 0;
+        
+        const activeCount = await queryOne(`SELECT COUNT(*) as count FROM orders WHERE status IN ('received', 'viewed', 'contacted', 'confirmed', 'preparing', 'delivering')`);
+        active_orders = activeCount ? activeCount.count : 0;
+      }
+      
+      if (stats.messages_table_exists > 0) {
+        const messageCount = await queryOne(`SELECT COUNT(*) as count FROM contact_messages WHERE status = 'unread'`);
+        unread_messages = messageCount ? messageCount.count : 0;
+      }
+      
+      if (stats.applications_table_exists > 0) {
+        const appCount = await queryOne(`SELECT COUNT(*) as count FROM artist_applications WHERE status = 'pending'`);
+        pending_applications = appCount ? appCount.count : 0;
+      }
+      
+      return {
+        total_artists,
+        total_arts,
+        total_sold,
+        total_views: stats.total_views || 0,
+        unread_messages,
+        pending_applications,
+        active_orders
       };
     } catch (error) {
       console.error('Error getting dashboard stats:', error);

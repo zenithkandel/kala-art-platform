@@ -57,10 +57,39 @@ app.use((req, res, next) => {
 
 // Page view tracking middleware
 app.use(async (req, res, next) => {
-  // Only track page views for GET requests to main pages
-  if (req.method === 'GET' && !req.path.startsWith('/public')) {
+  // Only track page views for GET requests to main pages (excluding assets and API calls)
+  if (req.method === 'GET' && !req.path.startsWith('/public') && !req.path.startsWith('/admin')) {
     try {
-      await dbService.recordPageView();
+      // Determine page type and ID based on the route
+      let pageType = 'home';
+      let pageId = null;
+      
+      if (req.path === '/' || req.path === '/home') {
+        pageType = 'home';
+      } else if (req.path.startsWith('/art/')) {
+        pageType = 'art_detail';
+        // Extract art ID from URL if present
+        const artIdMatch = req.path.match(/\/art\/(\d+)/);
+        pageId = artIdMatch ? parseInt(artIdMatch[1]) : null;
+      } else if (req.path.startsWith('/artist/')) {
+        pageType = 'artist_profile';
+        // Extract artist ID from URL if present
+        const artistIdMatch = req.path.match(/\/artist\/(\d+)/);
+        pageId = artistIdMatch ? parseInt(artistIdMatch[1]) : null;
+      } else if (req.path === '/artists') {
+        pageType = 'artists_list';
+      } else if (req.path === '/about') {
+        pageType = 'about';
+      } else if (req.path === '/register') {
+        pageType = 'register';
+      }
+      
+      // Get client information
+      const userAgent = req.get('User-Agent');
+      const ipAddress = req.ip || req.connection.remoteAddress;
+      const sessionId = req.sessionID;
+      
+      await dbService.recordPageView(pageType, pageId, userAgent, ipAddress, sessionId);
     } catch (error) {
       console.error('Page view tracking error:', error);
       // Don't block the request if tracking fails

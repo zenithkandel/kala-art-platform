@@ -448,7 +448,7 @@ CREATE INDEX idx_page_views_date_type ON page_views(view_date, page_type);
 
 -- Insert default admin (password: 'admin123' - CHANGE IN PRODUCTION!)
 INSERT INTO admins (username, email, password, full_name, role) VALUES 
-('admin', 'admin@kala.art', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Platform Administrator', 'super_admin');
+('admin', 'admin@kala.art', '$2b$12$mj0yXy1E04VQN30mG/ArZuo5lqf3bOeoN2raRvdbDzTMFvU1i.E82', 'Platform Administrator', 'super_admin');
 
 -- =========================================================
 -- SCHEMA COMPLETE
