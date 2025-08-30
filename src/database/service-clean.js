@@ -110,9 +110,10 @@ class DatabaseService {
   
   async getArts(filters = {}) {
     let sql = `
-      SELECT a.*, ar.full_name as artist_name, a.primary_image as image_thumb
+      SELECT a.*, ar.full_name as artist_name, ai.thumb_path as image_thumb
       FROM arts a
       LEFT JOIN artists ar ON a.artist_id = ar.artist_id
+      LEFT JOIN art_images ai ON a.primary_image_id = ai.image_id
       WHERE a.deleted_at IS NULL
     `;
     const params = [];
@@ -120,9 +121,6 @@ class DatabaseService {
     if (filters.status) {
       sql += ' AND a.status = ?';
       params.push(filters.status);
-    } else {
-      sql += ' AND a.status = ?';
-      params.push('listed');
     }
     
     if (filters.artist_id) {
@@ -470,147 +468,13 @@ class DatabaseService {
     }
   }
 
-  // ============= ADMIN AUTHENTICATION METHODS =============
-  
-  async getAdminByUsername(username) {
-    try {
-      const admin = await queryOne(
-        'SELECT * FROM admins WHERE username = ? AND is_active = TRUE',
-        [username]
-      );
-      return admin;
-    } catch (error) {
-      console.error('Error getting admin by username:', error);
-      throw error;
-    }
-  }
-
-  async getAdminById(adminId) {
-    try {
-      const admin = await queryOne(
-        'SELECT * FROM admins WHERE admin_id = ? AND is_active = TRUE',
-        [adminId]
-      );
-      return admin;
-    } catch (error) {
-      console.error('Error getting admin by ID:', error);
-      throw error;
-    }
-  }
-
-  async updateAdminLastLogin(adminId) {
-    try {
-      await query(
-        'UPDATE admins SET last_login = CURRENT_TIMESTAMP WHERE admin_id = ?',
-        [adminId]
-      );
-    } catch (error) {
-      console.error('Error updating admin last login:', error);
-      throw error;
-    }
-  }
-
-  async createAdmin(data) {
-    try {
-      const { username, email, password, full_name, role = 'admin' } = data;
-      const result = await query(
-        'INSERT INTO admins (username, email, password, full_name, role) VALUES (?, ?, ?, ?, ?)',
-        [username, email, password, full_name, role]
-      );
-      return result.insertId;
-    } catch (error) {
-      console.error('Error creating admin:', error);
-      throw error;
-    }
-  }
-
-  // ============= ADMIN DASHBOARD STATS METHODS =============
-  
-  async getDashboardStats() {
-    try {
-      // Get current stats
-      const totalArtists = await queryOne('SELECT COUNT(*) as count FROM artists WHERE deleted_at IS NULL');
-      const totalArtworks = await queryOne('SELECT COUNT(*) as count FROM arts WHERE deleted_at IS NULL');
-      const totalOrders = await queryOne('SELECT COUNT(*) as count FROM orders');
-      const totalMessages = await queryOne('SELECT COUNT(*) as count FROM contact_messages');
-      
-      // Get revenue (use confirmed, delivering, delivered orders)
-      const revenue = await queryOne('SELECT COALESCE(SUM(total_amount), 0) as total FROM orders WHERE status IN ("confirmed", "preparing", "delivering", "delivered")');
-      
-      // Get today's stats
-      const todayViews = await queryOne('SELECT COALESCE(total_views, 0) as count FROM page_views_daily WHERE view_date = CURDATE()');
-      const todayOrders = await queryOne('SELECT COUNT(*) as count FROM orders WHERE DATE(created_at) = CURDATE()');
-      
-      // Get additional stats for dashboard
-      const pendingApplications = await queryOne('SELECT COUNT(*) as count FROM artist_applications WHERE status = "pending"');
-      const unreadMessages = await queryOne('SELECT COUNT(*) as count FROM contact_messages WHERE status = "unread"');
-      const activeOrders = await queryOne('SELECT COUNT(*) as count FROM orders WHERE status IN ("received", "viewed", "contacted", "confirmed", "preparing", "delivering")');
-      const soldArts = await queryOne('SELECT COALESCE(SUM(quantity), 0) as count FROM order_items oi JOIN orders o ON oi.order_id = o.order_id WHERE o.status IN ("confirmed", "preparing", "delivering", "delivered")');
-
-      // Get total views from all daily records
-      const totalViews = await queryOne('SELECT COALESCE(SUM(total_views), 0) as count FROM page_views_daily');
-      
-      // Get recent data
-      const recentOrders = await query(`
-        SELECT order_id, order_code, customer_name, total_amount, status, created_at 
-        FROM orders 
-        ORDER BY created_at DESC 
-        LIMIT 5
-      `);
-      
-      const recentMessages = await query(`
-        SELECT message_id, full_name, email, subject, created_at 
-        FROM contact_messages 
-        ORDER BY created_at DESC 
-        LIMIT 5
-      `);
-
-      return {
-        // Match dashboard template expectations
-        total_artists: totalArtists.count || 0,
-        total_arts: totalArtworks.count || 0,
-        total_orders: totalOrders.count || 0,
-        total_messages: totalMessages.count || 0,
-        total_revenue: revenue.total || 0,
-        total_views: totalViews.count || 0,
-        today_views: todayViews.count || 0,
-        today_orders: todayOrders.count || 0,
-        pending_applications: pendingApplications.count || 0,
-        unread_messages: unreadMessages.count || 0,
-        active_orders: activeOrders.count || 0,
-        total_sold: soldArts.count || 0,
-        recent_orders: recentOrders || [],
-        recent_messages: recentMessages || []
-      };
-    } catch (error) {
-      console.error('Error getting dashboard stats:', error);
-      return {
-        total_artists: 0,
-        total_arts: 0,
-        total_orders: 0,
-        total_messages: 0,
-        total_revenue: 0,
-        total_views: 0,
-        today_views: 0,
-        today_orders: 0,
-        pending_applications: 0,
-        unread_messages: 0,
-        active_orders: 0,
-        total_sold: 0,
-        recent_orders: [],
-        recent_messages: []
-      };
-    }
-  }
-
   // ============= ADMIN LOGGING METHODS =============
   
   async logAdminActivity(adminId, action, details = null) {
     try {
-      const detailsJson = details ? JSON.stringify(details) : null;
       await query(
         'INSERT INTO admin_logs (admin_id, action, details) VALUES (?, ?, ?)',
-        [adminId, action, detailsJson]
+        [adminId, action, details]
       );
     } catch (error) {
       console.error('Error logging admin activity:', error);

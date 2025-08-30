@@ -12,6 +12,59 @@ class DatabaseService {
     );
     return result.insertId;
   }
+
+  // ============= HOMEPAGE STATS METHODS =============
+  
+  async getHomepageStats() {
+    try {
+      // Get today's views instead of total views
+      const todayViews = await queryOne(`
+        SELECT COALESCE(total_views, 0) as daily_views 
+        FROM page_views_daily 
+        WHERE view_date = CURDATE()
+      `);
+      
+      // Get other basic stats for homepage
+      let total_arts = 0;
+      let total_sold = 0;
+      let total_artists = 0;
+      
+      try {
+        const artCount = await queryOne(`SELECT COUNT(*) as count FROM arts WHERE status = 'listed' AND deleted_at IS NULL`);
+        total_arts = artCount ? artCount.count : 0;
+        
+        const soldCount = await queryOne(`SELECT COUNT(*) as count FROM arts WHERE status = 'sold' AND deleted_at IS NULL`);
+        total_sold = soldCount ? soldCount.count : 0;
+        
+        const artistCount = await queryOne(`SELECT COUNT(*) as count FROM artists WHERE status = 'active' AND deleted_at IS NULL`);
+        total_artists = artistCount ? artistCount.count : 0;
+      } catch (err) {
+        console.log('Error getting homepage stats, using defaults');
+      }
+      
+      return {
+        daily_views: todayViews ? todayViews.daily_views : 0,
+        total_arts,
+        total_sold,
+        total_artists
+      };
+    } catch (error) {
+      console.error('Error getting homepage stats:', error);
+      return {
+        daily_views: 0,
+        total_arts: 0,
+        total_sold: 0,
+        total_artists: 0
+      };
+    }
+  }
+
+  // ============= ADMIN LOGGING METHODS =============ists (full_name, avatar_path, specialty, age, bio, contact_email, contact_phone, instagram, slug)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [full_name, avatar_path, specialty, age, bio, contact_email, contact_phone, instagram, slug]
+    );
+    return result.insertId;
+  }
   
   async getArtists(filters = {}) {
     let sql = 'SELECT * FROM artists WHERE deleted_at IS NULL';
@@ -22,7 +75,7 @@ class DatabaseService {
       params.push(filters.status);
     }
     
-    sql += ' ORDER BY created_at DESC';
+    sql += ' ORDER BY joined_at DESC';
     
     if (filters.limit) {
       sql += ' LIMIT ?';
@@ -36,13 +89,6 @@ class DatabaseService {
     return await queryOne(
       'SELECT * FROM artists WHERE artist_id = ? AND deleted_at IS NULL',
       [artistId]
-    );
-  }
-  
-  async getArtistBySlug(slug) {
-    return await queryOne(
-      'SELECT * FROM artists WHERE slug = ? AND deleted_at IS NULL',
-      [slug]
     );
   }
   
@@ -99,20 +145,21 @@ class DatabaseService {
   // ============= ART METHODS =============
   
   async createArt(data) {
-    const { artist_id, title, style, description, materials, paper, width_mm, height_mm, colors, price, stock, slug } = data;
+    const { artist_id, title, type, description, materials, paper, style, width_mm, height_mm, colors, price, stock, slug } = data;
     const result = await query(
-      `INSERT INTO arts (artist_id, title, style, description, materials, paper_type, width_mm, height_mm, colors_used, price, stock_quantity, slug)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [artist_id, title, style, description, materials, paper, width_mm, height_mm, colors, price, stock, slug]
+      `INSERT INTO arts (artist_id, title, type, description, materials, paper, style, width_mm, height_mm, colors, price, stock, slug)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [artist_id, title, type, description, materials, paper, style, width_mm, height_mm, colors, price, stock, slug]
     );
     return result.insertId;
   }
   
   async getArts(filters = {}) {
     let sql = `
-      SELECT a.*, ar.full_name as artist_name, a.primary_image as image_thumb
+      SELECT a.*, ar.full_name as artist_name, ai.thumb_path as image_thumb
       FROM arts a
       LEFT JOIN artists ar ON a.artist_id = ar.artist_id
+      LEFT JOIN art_images ai ON a.primary_image_id = ai.image_id
       WHERE a.deleted_at IS NULL
     `;
     const params = [];
@@ -120,9 +167,6 @@ class DatabaseService {
     if (filters.status) {
       sql += ' AND a.status = ?';
       params.push(filters.status);
-    } else {
-      sql += ' AND a.status = ?';
-      params.push('listed');
     }
     
     if (filters.artist_id) {
@@ -158,11 +202,11 @@ class DatabaseService {
   // ============= ORDER METHODS =============
   
   async createOrder(data) {
-    const { order_code, customer_name, customer_phone, customer_email, customer_message, total_amount } = data;
+    const { order_code, buyer_name, contact_phone, contact_email, note, total_amount } = data;
     const result = await query(
-      `INSERT INTO orders (order_code, customer_name, customer_phone, customer_email, customer_message, total_amount)
+      `INSERT INTO orders (order_code, buyer_name, contact_phone, contact_email, note, total_amount)
        VALUES (?, ?, ?, ?, ?, ?)`,
-      [order_code, customer_name, customer_phone, customer_email, customer_message, total_amount]
+      [order_code, buyer_name, contact_phone, contact_email, note, total_amount]
     );
     return result.insertId;
   }
@@ -260,88 +304,120 @@ class DatabaseService {
     `);
   }
   
-  async recordPageView(page, userAgent = null) {
+  async getAnalyticsData() {
     try {
-      // First check if today's record exists
-      const existingRecord = await queryOne(`
-        SELECT view_date FROM page_views_daily WHERE view_date = CURDATE()
+      // Get basic stats
+      const [artistCount] = await query('SELECT COUNT(*) as count FROM artists WHERE status = "approved"');
+      const [artworkCount] = await query('SELECT COUNT(*) as count FROM arts');
+      const [orderCount] = await query('SELECT COUNT(*) as count FROM orders');
+      const [viewCount] = await query('SELECT SUM(views) as count FROM page_views_daily');
+      
+      // Get top artists
+      const topArtists = await query(`
+        SELECT 
+          a.full_name as name,
+          COUNT(arts.art_id) as artCount,
+          COALESCE(SUM(oi.quantity * oi.unit_price), 0) as totalRevenue
+        FROM artists a
+        LEFT JOIN arts ON a.artist_id = arts.artist_id
+        LEFT JOIN order_items oi ON arts.art_id = oi.art_id
+        WHERE a.status = 'approved'
+        GROUP BY a.artist_id
+        ORDER BY totalRevenue DESC, artCount DESC
+        LIMIT 5
       `);
       
-      if (existingRecord) {
-        // Update existing record
-        await query(`
-          UPDATE page_views_daily 
-          SET total_views = total_views + 1,
-              home_views = CASE WHEN ? = 'home' THEN home_views + 1 ELSE home_views END,
-              art_views = CASE WHEN ? = 'art' THEN art_views + 1 ELSE art_views END,
-              artist_views = CASE WHEN ? = 'artist' THEN artist_views + 1 ELSE artist_views END
-          WHERE view_date = CURDATE()
-        `, [page, page, page]);
-      } else {
-        // Create new record for today
-        await query(`
-          INSERT INTO page_views_daily (view_date, total_views, home_views, art_views, artist_views) 
-          VALUES (CURDATE(), 1, 
-            CASE WHEN ? = 'home' THEN 1 ELSE 0 END,
-            CASE WHEN ? = 'art' THEN 1 ELSE 0 END,
-            CASE WHEN ? = 'artist' THEN 1 ELSE 0 END
-          )
-        `, [page, page, page]);
-      }
+      // Get recent activity (simplified)
+      const recentActivity = await query(`
+        SELECT 
+          'order' as type,
+          CONCAT('New order from ', buyer_name) as description,
+          created_at
+        FROM orders
+        ORDER BY created_at DESC
+        LIMIT 10
+      `);
       
-      console.log(`📊 Page view recorded: ${page} (${userAgent || 'N/A'})`);
+      return {
+        totalViews: viewCount.count || 0,
+        totalArtists: artistCount.count || 0,
+        totalArtworks: artworkCount.count || 0,
+        totalOrders: orderCount.count || 0,
+        topArtists: topArtists || [],
+        recentActivity: recentActivity || []
+      };
     } catch (error) {
-      console.error('Error recording page view:', error);
+      console.error('Error getting analytics data:', error);
+      return {
+        totalViews: 0,
+        totalArtists: 0,
+        totalArtworks: 0,
+        totalOrders: 0,
+        topArtists: [],
+        recentActivity: []
+      };
     }
   }
   
-  // ============= HOMEPAGE STATS METHODS =============
-  
-  async getHomepageStats() {
+  async recordPageView(pageType = 'home', pageId = null, userAgent = null, ipAddress = null, sessionId = null) {
     try {
-      // Get today's views instead of total views
-      const todayViews = await queryOne(`
-        SELECT COALESCE(total_views, 0) as daily_views 
-        FROM page_views_daily 
-        WHERE view_date = CURDATE()
-      `);
+      const viewDate = new Date().toISOString().split('T')[0];
       
-      // Get other basic stats for homepage
-      let total_arts = 0;
-      let total_sold = 0;
-      let total_artists = 0;
+      // Record individual page view
+      await query(
+        `INSERT INTO page_views (page_type, page_id, view_date, ip_address, user_agent, session_id) 
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [pageType, pageId, viewDate, ipAddress, userAgent, sessionId]
+      );
       
-      try {
-        const artCount = await queryOne(`SELECT COUNT(*) as count FROM arts WHERE status = 'listed' AND deleted_at IS NULL`);
-        total_arts = artCount ? artCount.count : 0;
-        
-        const soldCount = await queryOne(`SELECT COUNT(*) as count FROM arts WHERE status = 'sold' AND deleted_at IS NULL`);
-        total_sold = soldCount ? soldCount.count : 0;
-        
-        const artistCount = await queryOne(`SELECT COUNT(*) as count FROM artists WHERE status = 'active' AND deleted_at IS NULL`);
-        total_artists = artistCount ? artistCount.count : 0;
-      } catch (err) {
-        console.log('Error getting homepage stats, using defaults');
-      }
+      // Update daily aggregated stats
+      await query(
+        `INSERT INTO page_views_daily (view_date, total_views, home_views, art_views, artist_views) 
+         VALUES (?, 1, ?, ?, ?) 
+         ON DUPLICATE KEY UPDATE 
+         total_views = total_views + 1,
+         home_views = home_views + ?,
+         art_views = art_views + ?,
+         artist_views = artist_views + ?`,
+        [
+          viewDate,
+          pageType === 'home' ? 1 : 0,
+          pageType === 'art_detail' ? 1 : 0,
+          pageType === 'artist_profile' ? 1 : 0,
+          pageType === 'home' ? 1 : 0,
+          pageType === 'art_detail' ? 1 : 0,
+          pageType === 'artist_profile' ? 1 : 0
+        ]
+      );
       
-      return {
-        daily_views: todayViews ? todayViews.daily_views : 0,
-        total_arts,
-        total_sold,
-        total_artists
-      };
+      console.log(`📊 Page view recorded: ${pageType} (${pageId || 'N/A'})`);
     } catch (error) {
-      console.error('Error getting homepage stats:', error);
-      return {
-        daily_views: 0,
-        total_arts: 0,
-        total_sold: 0,
-        total_artists: 0
-      };
+      console.error('Page view tracking error:', error);
     }
   }
 
-  // ============= ADMIN DASHBOARD STATS METHODS =============
+  // ============= ADMIN METHODS =============
+  
+  async getAdminByUsername(username) {
+    return await queryOne(
+      'SELECT * FROM admins WHERE username = ? AND is_active = 1',
+      [username]
+    );
+  }
+  
+  async getAdminById(adminId) {
+    return await queryOne(
+      'SELECT * FROM admins WHERE admin_id = ? AND is_active = 1',
+      [adminId]
+    );
+  }
+  
+  async updateAdminLastLogin(adminId) {
+    await query(
+      'UPDATE admins SET last_login = CURRENT_TIMESTAMP WHERE admin_id = ?',
+      [adminId]
+    );
+  }
   
   async getDashboardStats() {
     try {
@@ -469,148 +545,21 @@ class DatabaseService {
       };
     }
   }
-
-  // ============= ADMIN AUTHENTICATION METHODS =============
   
-  async getAdminByUsername(username) {
-    try {
-      const admin = await queryOne(
-        'SELECT * FROM admins WHERE username = ? AND is_active = TRUE',
-        [username]
-      );
-      return admin;
-    } catch (error) {
-      console.error('Error getting admin by username:', error);
-      throw error;
-    }
-  }
-
-  async getAdminById(adminId) {
-    try {
-      const admin = await queryOne(
-        'SELECT * FROM admins WHERE admin_id = ? AND is_active = TRUE',
-        [adminId]
-      );
-      return admin;
-    } catch (error) {
-      console.error('Error getting admin by ID:', error);
-      throw error;
-    }
-  }
-
-  async updateAdminLastLogin(adminId) {
+  async logAdminActivity(adminId, action, details = {}) {
     try {
       await query(
-        'UPDATE admins SET last_login = CURRENT_TIMESTAMP WHERE admin_id = ?',
-        [adminId]
-      );
-    } catch (error) {
-      console.error('Error updating admin last login:', error);
-      throw error;
-    }
-  }
-
-  async createAdmin(data) {
-    try {
-      const { username, email, password, full_name, role = 'admin' } = data;
-      const result = await query(
-        'INSERT INTO admins (username, email, password, full_name, role) VALUES (?, ?, ?, ?, ?)',
-        [username, email, password, full_name, role]
-      );
-      return result.insertId;
-    } catch (error) {
-      console.error('Error creating admin:', error);
-      throw error;
-    }
-  }
-
-  // ============= ADMIN DASHBOARD STATS METHODS =============
-  
-  async getDashboardStats() {
-    try {
-      // Get current stats
-      const totalArtists = await queryOne('SELECT COUNT(*) as count FROM artists WHERE deleted_at IS NULL');
-      const totalArtworks = await queryOne('SELECT COUNT(*) as count FROM arts WHERE deleted_at IS NULL');
-      const totalOrders = await queryOne('SELECT COUNT(*) as count FROM orders');
-      const totalMessages = await queryOne('SELECT COUNT(*) as count FROM contact_messages');
-      
-      // Get revenue (use confirmed, delivering, delivered orders)
-      const revenue = await queryOne('SELECT COALESCE(SUM(total_amount), 0) as total FROM orders WHERE status IN ("confirmed", "preparing", "delivering", "delivered")');
-      
-      // Get today's stats
-      const todayViews = await queryOne('SELECT COALESCE(total_views, 0) as count FROM page_views_daily WHERE view_date = CURDATE()');
-      const todayOrders = await queryOne('SELECT COUNT(*) as count FROM orders WHERE DATE(created_at) = CURDATE()');
-      
-      // Get additional stats for dashboard
-      const pendingApplications = await queryOne('SELECT COUNT(*) as count FROM artist_applications WHERE status = "pending"');
-      const unreadMessages = await queryOne('SELECT COUNT(*) as count FROM contact_messages WHERE status = "unread"');
-      const activeOrders = await queryOne('SELECT COUNT(*) as count FROM orders WHERE status IN ("received", "viewed", "contacted", "confirmed", "preparing", "delivering")');
-      const soldArts = await queryOne('SELECT COALESCE(SUM(quantity), 0) as count FROM order_items oi JOIN orders o ON oi.order_id = o.order_id WHERE o.status IN ("confirmed", "preparing", "delivering", "delivered")');
-
-      // Get total views from all daily records
-      const totalViews = await queryOne('SELECT COALESCE(SUM(total_views), 0) as count FROM page_views_daily');
-      
-      // Get recent data
-      const recentOrders = await query(`
-        SELECT order_id, order_code, customer_name, total_amount, status, created_at 
-        FROM orders 
-        ORDER BY created_at DESC 
-        LIMIT 5
-      `);
-      
-      const recentMessages = await query(`
-        SELECT message_id, full_name, email, subject, created_at 
-        FROM contact_messages 
-        ORDER BY created_at DESC 
-        LIMIT 5
-      `);
-
-      return {
-        // Match dashboard template expectations
-        total_artists: totalArtists.count || 0,
-        total_arts: totalArtworks.count || 0,
-        total_orders: totalOrders.count || 0,
-        total_messages: totalMessages.count || 0,
-        total_revenue: revenue.total || 0,
-        total_views: totalViews.count || 0,
-        today_views: todayViews.count || 0,
-        today_orders: todayOrders.count || 0,
-        pending_applications: pendingApplications.count || 0,
-        unread_messages: unreadMessages.count || 0,
-        active_orders: activeOrders.count || 0,
-        total_sold: soldArts.count || 0,
-        recent_orders: recentOrders || [],
-        recent_messages: recentMessages || []
-      };
-    } catch (error) {
-      console.error('Error getting dashboard stats:', error);
-      return {
-        total_artists: 0,
-        total_arts: 0,
-        total_orders: 0,
-        total_messages: 0,
-        total_revenue: 0,
-        total_views: 0,
-        today_views: 0,
-        today_orders: 0,
-        pending_applications: 0,
-        unread_messages: 0,
-        active_orders: 0,
-        total_sold: 0,
-        recent_orders: [],
-        recent_messages: []
-      };
-    }
-  }
-
-  // ============= ADMIN LOGGING METHODS =============
-  
-  async logAdminActivity(adminId, action, details = null) {
-    try {
-      const detailsJson = details ? JSON.stringify(details) : null;
-      await query(
-        'INSERT INTO admin_logs (admin_id, action, details) VALUES (?, ?, ?)',
-        [adminId, action, detailsJson]
+        `INSERT INTO admin_activity_log (admin_id, action, table_name, record_id, new_values, ip_address, user_agent)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [
+          adminId,
+          action,
+          details.table_name || null,
+          details.record_id || null,
+          details.new_values ? JSON.stringify(details.new_values) : null,
+          details.ip_address || null,
+          details.user_agent || null
+        ]
       );
     } catch (error) {
       console.error('Error logging admin activity:', error);

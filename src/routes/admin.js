@@ -118,9 +118,12 @@ router.get('/dashboard', requireAuth, async (req, res) => {
         total_arts: 0,
         total_sold: 0,
         total_views: 0,
-        unread_messages: 0,
         pending_applications: 0,
-        active_orders: 0
+        unread_messages: 0,
+        active_orders: 0,
+        total_revenue: 0,
+        recent_orders: [],
+        recent_messages: []
       }
     });
   }
