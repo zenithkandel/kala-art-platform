@@ -2,7 +2,7 @@
   const root = document.documentElement;
   const stored = localStorage.getItem('theme');
   const media = window.matchMedia('(prefers-color-scheme: dark)');
-  const initial = stored || (media.matches ? 'dark' : 'light');
+  const initial = stored || 'dark'; // Default to dark theme
   root.setAttribute('data-theme', initial);
   const btn = document.getElementById('themeToggle');
   function setTheme(next){ root.setAttribute('data-theme', next); localStorage.setItem('theme', next); }
