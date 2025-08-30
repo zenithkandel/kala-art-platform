@@ -163,4 +163,61 @@ router.get('/api/artworks', async (req, res) => {
   }
 });
 
+// API endpoint to get artists for AJAX loading
+router.get('/api/artists', async (req, res) => {
+  try {
+    const { sort = 'name' } = req.query;
+    let artists = await dbService.getArtists();
+    
+    // Get artwork count for each artist
+    const enrichedArtists = await Promise.all(
+      artists.map(async (artist) => {
+        try {
+          const artworks = await dbService.getArts({ artist_id: artist.artist_id });
+          const artworkCount = artworks.length;
+          const soldCount = artworks.filter(art => art.status === 'sold').length;
+          
+          return {
+            artist_id: artist.artist_id,
+            id: artist.artist_id, // For backward compatibility
+            name: artist.full_name,
+            full_name: artist.full_name,
+            specialty: artist.specialty,
+            age: artist.age,
+            bio: artist.bio,
+            profile_picture: artist.profile_picture,
+            instagram: artist.instagram,
+            slug: artist.slug,
+            artwork_count: artworkCount,
+            sold_count: soldCount,
+            created_at: artist.created_at
+          };
+        } catch (error) {
+          console.error(`Error fetching artwork count for artist ${artist.artist_id}:`, error);
+          return {
+            ...artist,
+            name: artist.full_name,
+            artwork_count: 0,
+            sold_count: 0
+          };
+        }
+      })
+    );
+    
+    // Sort artists based on query parameter
+    if (sort === 'artworks') {
+      enrichedArtists.sort((a, b) => b.artwork_count - a.artwork_count);
+    } else if (sort === 'sales') {
+      enrichedArtists.sort((a, b) => b.sold_count - a.sold_count);
+    } else {
+      enrichedArtists.sort((a, b) => a.full_name.localeCompare(b.full_name));
+    }
+    
+    res.json(enrichedArtists);
+  } catch (error) {
+    console.error('Error fetching artists API:', error);
+    res.status(500).json({ error: 'Failed to fetch artists' });
+  }
+});
+
 module.exports = router;
