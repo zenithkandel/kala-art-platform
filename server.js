@@ -8,25 +8,18 @@ const session = require('express-session');
 const cors = require('cors');
 const ejsLayouts = require('express-ejs-layouts');
 
-// Import database services and connection test
+// Import database and middleware
 const { testConnection } = require('./src/database/connection');
 const dbService = require('./src/database/service');
-
-// Import routes and middleware
-const clientRoutes = require('./src/routes/client');
-const adminRoutes = require('./src/routes/admin');
-const { addAdminToLocals } = require('./src/middleware/adminAuth');
 
 const app = express();
 
 // Test database connection on startup
 testConnection();
 
-// --- CORE MIDDLEWARE ---
-
 // Basic security headers; relax CSP in dev to allow CDN assets
 app.use(helmet({
-  contentSecurityPolicy: false, 
+  contentSecurityPolicy: false,
 }));
 app.use(cors());
 app.use(compression());
@@ -34,11 +27,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Session management for client cart and admin auth
+// Sessions (for cart functionality)
 app.use(session({
   secret: process.env.SESSION_SECRET || 'kala-art-platform-secret-key-change-in-production',
   resave: false,
-  saveUninitialized: true, // Necessary for admin login session tracking
+  saveUninitialized: false,
   cookie: { 
     maxAge: 1000 * 60 * 60 * 24, // 24 hours
     secure: process.env.NODE_ENV === 'production',
@@ -46,23 +39,16 @@ app.use(session({
   },
 }));
 
-// --- STATIC ASSETS & VIEWS ---
-
 // Static assets
 app.use('/public', express.static(path.join(__dirname, 'public')));
-app.use('/img', express.static(path.join(__dirname, 'public', 'img')));
 
-// View engine setup
+// View engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(ejsLayouts);
+app.set('layout', 'layouts/main');
 
-// --- DYNAMIC MIDDLEWARE & LOCALS ---
-
-// Make admin session data available in all templates
-app.use(addAdminToLocals);
-
-// Expose other common local variables to all templates
+// Expose common locals
 app.use((req, res, next) => {
   res.locals.appName = 'कला';
   res.locals.year = new Date().getFullYear();
@@ -71,70 +57,93 @@ app.use((req, res, next) => {
 
 // Page view tracking middleware
 app.use(async (req, res, next) => {
-  // Only track page views for GET requests to non-asset, non-admin pages
+  // Only track page views for GET requests to main pages (excluding assets and API calls)
   if (req.method === 'GET' && !req.path.startsWith('/public') && !req.path.startsWith('/admin')) {
     try {
-      await dbService.recordPageView();
+      // Determine page type and ID based on the route
+      let pageType = 'home';
+      let pageId = null;
+      
+      if (req.path === '/' || req.path === '/home') {
+        pageType = 'home';
+      } else if (req.path.startsWith('/art/')) {
+        pageType = 'art_detail';
+        // Extract art ID from URL if present
+        const artIdMatch = req.path.match(/\/art\/(\d+)/);
+        pageId = artIdMatch ? parseInt(artIdMatch[1]) : null;
+      } else if (req.path.startsWith('/artist/')) {
+        pageType = 'artist_profile';
+        // Extract artist ID from URL if present
+        const artistIdMatch = req.path.match(/\/artist\/(\d+)/);
+        pageId = artistIdMatch ? parseInt(artistIdMatch[1]) : null;
+      } else if (req.path === '/artists') {
+        pageType = 'artists_list';
+      } else if (req.path === '/about') {
+        pageType = 'about';
+      } else if (req.path === '/register') {
+        pageType = 'register';
+      }
+      
+      // Get client information
+      const userAgent = req.get('User-Agent');
+      const ipAddress = req.ip || req.connection.remoteAddress;
+      const sessionId = req.sessionID;
+      
+      await dbService.recordPageView(pageType, pageId, userAgent, ipAddress, sessionId);
     } catch (error) {
       console.error('Page view tracking error:', error);
+      // Don't block the request if tracking fails
     }
   }
   next();
 });
 
-// --- ROUTING ---
+// Routes
+const clientRoutes = require('./src/routes/client');
+const adminRoutes = require('./src/routes/admin');
 
-// Middleware to dynamically set the layout based on the route
-app.use((req, res, next) => {
-  if (req.path.startsWith('/admin')) {
-    app.set('layout', 'admin/layout');
-  } else {
-    app.set('layout', 'layouts/main');
-  }
-  next();
-});
-
-// Mount application routes
-app.use('/admin', adminRoutes);
+// Use main layout for client routes
 app.use('/', clientRoutes);
 
-// --- ERROR HANDLING ---
+// Use admin layout for admin routes
+app.use('/admin', adminRoutes);
 
-// 404 handler for unmatched routes
+// 404 handler
 app.use((req, res) => {
   res.status(404).render('misc/404', { title: 'Not Found' });
 });
 
-// Global error handler
+// Error handler
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
+  
   const message = process.env.NODE_ENV === 'production' 
-    ? 'An unexpected error occurred.' 
+    ? 'Something went wrong!' 
     : err.message;
+  
   res.status(500).render('misc/error', {
     title: '500 - Server Error',
     message
   });
 });
 
-// --- SERVER LIFECYCLE ---
-
 // Graceful shutdown
-const gracefulShutdown = async (signal) => {
-  console.log(`${signal} received, shutting down gracefully.`);
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM received, shutting down gracefully');
   const { closePool } = require('./src/database/connection');
   await closePool();
   process.exit(0);
-};
+});
 
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGINT', async () => {
+  console.log('SIGINT received, shutting down gracefully');
+  const { closePool } = require('./src/database/connection');
+  await closePool();
+  process.exit(0);
+});
 
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🎨 कला platform is running.`);
-  console.log(`   - Client: http://localhost:${PORT}`);
-  console.log(`   - Admin:  http://localhost:${PORT}/admin`);
+  console.log(`कला client running on http://localhost:${PORT}`);
 });
-

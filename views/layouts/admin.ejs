@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title><%= title %></title>
+  
+  <!-- Security Headers -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="/public/css/base.css">
+  <link rel="stylesheet" href="/public/css/admin.css">
+  
+  <style>
+    /* Admin-specific overrides */
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+    }
+    
+    .admin-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Admin header */
+    .admin-header {
+      background: var(--surface);
+      border-bottom: 1px solid rgba(124, 92, 255, 0.2);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+    }
+    
+    .admin-header__brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .admin-header__user {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .admin-header__user-info {
+      text-align: right;
+    }
+    
+    .admin-header__user-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .admin-header__user-role {
+      font-size: 0.875rem;
+      color: var(--muted);
+      text-transform: capitalize;
+    }
+    
+    /* Admin main content */
+    .admin-main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .admin-header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .admin-main {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <% if (typeof admin !== 'undefined' && admin) { %>
+      <!-- Admin Header -->
+      <header class="admin-header">
+        <div class="admin-header__brand">
+          <i class="fas fa-shield-alt"></i>
+          <span>कला Admin</span>
+        </div>
+        <div class="admin-header__user">
+          <div class="admin-header__user-info">
+            <div class="admin-header__user-name"><%= admin.full_name %></div>
+            <div class="admin-header__user-role"><%= admin.role.replace('_', ' ') %></div>
+          </div>
+          <form method="post" action="/admin/logout" style="display: inline;">
+            <button type="submit" class="btn btn--ghost" title="Logout">
+              <i class="fas fa-sign-out-alt"></i>
+            </button>
+          </form>
+        </div>
+      </header>
+    <% } %>
+    
+    <!-- Main Content -->
+    <main class="admin-main">
+      <%- body %>
+    </main>
+  </div>
+  
+  <!-- Scripts -->
+  <script src="/public/js/theme.js"></script>
+  <script>
+    // Admin-specific JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+      // Auto-logout on session expiry
+      let lastActivity = Date.now();
+      const sessionTimeout = 24 * 60 * 60 * 1000; // 24 hours
+      
+      function checkSession() {
+        if (Date.now() - lastActivity > sessionTimeout) {
+          alert('Session expired. You will be redirected to login.');
+          window.location.href = '/admin/login';
+        }
+      }
+      
+      // Track user activity
+      document.addEventListener('click', () => lastActivity = Date.now());
+      document.addEventListener('keypress', () => lastActivity = Date.now());
+      
+      // Check session every 5 minutes
+      setInterval(checkSession, 5 * 60 * 1000);
+      
+      // Form validation
+      const forms = document.querySelectorAll('form');
+      forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+          const requiredInputs = form.querySelectorAll('[required]');
+          let isValid = true;
+          
+          requiredInputs.forEach(input => {
+            if (!input.value.trim()) {
+              isValid = false;
+              input.style.borderColor = '#ff5c80';
+            } else {
+              input.style.borderColor = '';
+            }
+          });
+          
+          if (!isValid) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
