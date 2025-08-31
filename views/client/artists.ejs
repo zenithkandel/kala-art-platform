@@ -1,202 +1,123 @@
-<!-- Hero Section -->
-<style>
-  body { background-color: red !important; }
-  .artists-hero { background-color: red !important; }
-  .artists-hero__title { color: red !important; font-size: 100px !important; }
-</style>
-<script>document.body.className += ' artists-page';</script>
-<section class="artists-hero">
-  <div class="artists-hero__content">
-    <div class="artists-hero__text">
-      <h1 class="artists-hero__title">
-        <span class="title-accent">Talented</span> Young Artists
-      </h1>
-      <p class="artists-hero__subtitle">
-        Discover emerging talent from around the world. Each artist brings their unique perspective and creativity to our platform.
-      </p>
-      <div class="artists-hero__stats">
-        <div class="hero-stat">
-          <span class="hero-stat__number" id="totalArtists">0</span>
-          <span class="hero-stat__label">Artists</span>
-        </div>
-        <div class="hero-stat">
-          <span class="hero-stat__number" id="totalArtworks">0</span>
-          <span class="hero-stat__label">Artworks</span>
-        </div>
-        <div class="hero-stat">
-          <span class="hero-stat__number" id="totalSpecialties">0</span>
-          <span class="hero-stat__label">Specialties</span>
-        </div>
-      </div>
+<!-- Artists Page -->
+<section class="hero">
+  <div class="hero__content">
+    <h1><i class="fas fa-users"></i> Meet Our Artists</h1>
+    <p>Discover talented young artists and their incredible artworks from around the world.</p>
+  </div>
+</section>
+
+<section class="stats" aria-label="Artist statistics">
+  <div class="stats__grid">
+    <div class="stat">
+      <i class="fas fa-users stat__icon"></i>
+      <span class="stat__num" id="totalArtists">0</span>
+      <span class="stat__label">Artists</span>
     </div>
-    <div class="artists-hero__visual">
-      <div class="hero-artwork-grid">
-        <div class="hero-artwork hero-artwork--1"></div>
-        <div class="hero-artwork hero-artwork--2"></div>
-        <div class="hero-artwork hero-artwork--3"></div>
-        <div class="hero-artwork hero-artwork--4"></div>
-      </div>
+    <div class="stat">
+      <i class="fas fa-paint-brush stat__icon"></i>
+      <span class="stat__num" id="totalArtworks">0</span>
+      <span class="stat__label">Artworks</span>
+    </div>
+    <div class="stat">
+      <i class="fas fa-palette stat__icon"></i>
+      <span class="stat__num" id="totalSpecialties">0</span>
+      <span class="stat__label">Specialties</span>
     </div>
   </div>
 </section>
 
-<!-- Search and Filters Section -->
-<section class="artists-controls">
-  <div class="artists-controls__container">
-    <div class="artists-search">
-      <div class="search-input-wrapper">
-        <i class="fas fa-search search-icon"></i>
+<!-- Artists Controls -->
+<section class="section">
+  <div class="container">
+    <div class="filters">
+      <div class="search-box">
         <input 
           type="text" 
-          id="artistSearchInput"
-          placeholder="Search artists by name, specialty, or style..."
-          class="search-input"
+          class="input" 
+          id="artistSearch" 
+          placeholder="Search artists by name, specialty..."
+          autocomplete="off"
         >
-        <button class="search-clear" id="clearSearch" style="display: none;">
-          <i class="fas fa-times"></i>
+        <button class="btn btn--secondary" id="searchClear" style="display: none;">
+          <i class="fas fa-times"></i> Clear
         </button>
       </div>
-    </div>
-    
-    <div class="artists-filters">
+      
       <div class="filter-group">
         <label class="filter-label">Sort by:</label>
         <div class="filter-buttons">
-          <button class="filter-btn active" data-sort="name">
-            <i class="fas fa-user"></i>
-            <span>Name</span>
+          <button class="btn btn--filter active" data-sort="name">
+            <i class="fas fa-sort-alpha-down"></i> Name
           </button>
-          <button class="filter-btn" data-sort="artworks">
-            <i class="fas fa-palette"></i>
-            <span>Most Artworks</span>
+          <button class="btn btn--filter" data-sort="newest">
+            <i class="fas fa-clock"></i> Newest
           </button>
-          <button class="filter-btn" data-sort="sales">
-            <i class="fas fa-trophy"></i>
-            <span>Most Sales</span>
+          <button class="btn btn--filter" data-sort="popular">
+            <i class="fas fa-fire"></i> Popular
           </button>
-          <button class="filter-btn" data-sort="recent">
-            <i class="fas fa-clock"></i>
-            <span>Recently Joined</span>
+          <button class="btn btn--filter" data-sort="artworks">
+            <i class="fas fa-palette"></i> Most Artworks
           </button>
         </div>
       </div>
       
       <div class="filter-group">
         <label class="filter-label">Specialty:</label>
-        <div class="specialty-filters">
-          <button class="specialty-btn active" data-specialty="all">All</button>
-          <button class="specialty-btn" data-specialty="painting">Painting</button>
-          <button class="specialty-btn" data-specialty="digital">Digital Art</button>
-          <button class="specialty-btn" data-specialty="portrait">Portrait</button>
-          <button class="specialty-btn" data-specialty="abstract">Abstract</button>
-          <button class="specialty-btn" data-specialty="traditional">Traditional</button>
+        <div class="filter-buttons">
+          <button class="btn btn--filter active" data-specialty="all">
+            <i class="fas fa-globe"></i> All
+          </button>
+          <button class="btn btn--filter" data-specialty="painting">
+            <i class="fas fa-paint-brush"></i> Painting
+          </button>
+          <button class="btn btn--filter" data-specialty="sculpture">
+            <i class="fas fa-cube"></i> Sculpture
+          </button>
+          <button class="btn btn--filter" data-specialty="digital">
+            <i class="fas fa-laptop"></i> Digital Art
+          </button>
+          <button class="btn btn--filter" data-specialty="photography">
+            <i class="fas fa-camera"></i> Photography
+          </button>
         </div>
       </div>
-      
-      <div class="view-toggle">
-        <button class="view-btn active" data-view="grid" title="Grid View">
-          <i class="fas fa-th"></i>
-        </button>
-        <button class="view-btn" data-view="list" title="List View">
-          <i class="fas fa-list"></i>
-        </button>
-      </div>
     </div>
   </div>
 </section>
 
-<!-- Results Section -->
-<section class="artists-results">
-  <div class="artists-results__header">
-    <div class="results-info">
-      <span id="resultsCount">Loading artists...</span>
-    </div>
-    <div class="results-actions">
-      <button class="results-btn" id="randomizeBtn">
-        <i class="fas fa-random"></i>
-        <span>Surprise Me</span>
+<!-- Artists Results -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="results-info" id="resultsInfo">Loading artists...</div>
+      <button class="btn btn--primary" id="refreshResults">
+        <i class="fas fa-sync-alt"></i> Refresh
       </button>
     </div>
-  </div>
-  
-  <div class="artists-grid" id="artistsGrid">
-    <!-- Artists will be loaded here dynamically -->
-  </div>
-  
-  <div class="load-more-section" id="loadMoreSection" style="display: none;">
-    <button class="load-more-btn" id="loadMoreBtn">
-      <span>Load More Artists</span>
-      <i class="fas fa-chevron-down"></i>
-    </button>
-  </div>
-</section>
-
-<!-- Featured Spotlight -->
-<section class="featured-spotlight" id="featuredSpotlight" style="display: none;">
-  <div class="spotlight-container">
-    <h2 class="spotlight-title">Artist Spotlight</h2>
-    <div class="spotlight-content" id="spotlightContent">
-      <!-- Featured artist content will be inserted here -->
+    
+    <div class="cards-grid" id="artistsGrid">
+      <!-- Artists will be loaded here -->
     </div>
+    
+    <!-- Loading State -->
+    <div class="loading-state" id="loadingSpinner">
+      <div class="spinner"></div>
+      <p>Loading amazing artists...</p>
+    </div>
+    
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+      <i class="fas fa-users"></i>
+      <h3>No artists found</h3>
+      <p>Try adjusting your search or filters</p>
+    </div>
+    
+    <!-- Load More -->
+    <div class="load-more" id="loadMoreSection" style="display: none;">
+      <button class="btn btn--secondary" id="loadMoreBtn">
+        <i class="fas fa-chevron-down"></i> Load More Artists
+      </button>
   </div>
 </section>
 
-<script src="http://localhost:3000/public/js/artists-page.js"></script>
-<script>
-// Fallback stats update in case the main script fails
-setTimeout(async () => {
-  try {
-    const response = await fetch('/api/artists');
-    const artists = await response.json();
-    
-    // Update stats
-    document.getElementById('totalArtists').textContent = artists.length;
-    
-    const totalArtworks = artists.reduce((sum, artist) => sum + (artist.artwork_count || 0), 0);
-    document.getElementById('totalArtworks').textContent = totalArtworks;
-    
-    const specialties = [...new Set(artists.map(artist => artist.specialty))];
-    document.getElementById('totalSpecialties').textContent = specialties.length;
-    
-    console.log('Fallback stats updated:', { artists: artists.length, artworks: totalArtworks, specialties: specialties.length });
-    
-    // Update results info if main script didn't work
-    const resultsInfo = document.getElementById('resultsInfo');
-    if (resultsInfo && resultsInfo.textContent.includes('0 of 0')) {
-      resultsInfo.textContent = `Showing ${artists.length} of ${artists.length} artists`;
-    }
-    
-    // If grid is empty, show basic artist cards
-    const grid = document.getElementById('artistsGrid');
-    if (grid && grid.children.length === 0) {
-      artists.slice(0, 12).forEach(artist => {
-        const card = document.createElement('div');
-        card.className = 'artist-card-modern';
-        card.innerHTML = `
-          <div class="artist-card-modern__image">
-            <img src="http://localhost:3000/public/img/placeholder-avatar.png" 
-                 alt="${artist.name}"
-                 loading="lazy">
-          </div>
-          <div class="artist-card-modern__content">
-            <div class="artist-card-modern__header">
-              <h3 class="artist-card-modern__name">${artist.name}</h3>
-              <p class="artist-card-modern__specialty">${artist.specialty}</p>
-            </div>
-            <div class="artist-card-modern__stats">
-              <div class="artist-card-modern__stat">
-                <span class="artist-card-modern__stat-number">${artist.artwork_count || 0}</span>
-                <span class="artist-card-modern__stat-label">Artworks</span>
-              </div>
-            </div>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    }
-    
-  } catch (error) {
-    console.error('Fallback update failed:', error);
-  }
-}, 1000);
-</script>
+<script src="/public/js/artists-page-new.js"></script>
